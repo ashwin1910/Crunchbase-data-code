@@ -1,0 +1,1440 @@
+import os
+import json
+import urllib.request
+import pandas as pd
+import time
+
+# This code can be used to scrape details for any startup tracked by CrunchBase
+
+working_directory= str('')
+os.chdir(working_directory) # Change to working directory
+
+api_key = 'd29cceca579ec417b33bb5902853be92' # Research Access to API valid till April 2019; should request CrunchBase (through Prof. Deepa Mani) to extend the access, if required
+
+# Input file for person' CrunchBase API URL
+person_input_data= pd.read_stata(r'')
+
+# Tracking time taken for the code
+code_start= time.time() 
+# Creating list of all companies' CrunchBase API URL
+person_permalink_list=[]
+for string in person_input_data:
+    person_permalink_list.append(string)
+start_index = 0 # Specify the index of the first company to be scraped from the input list
+end_index = 499 # Specify the index of the last company to be scraped from the input list
+folder_location_name = str(str(start_index)+' to '+str(end_index))
+
+os.chdir(working_directory+ '/' + folder_location_name) # For saving outputs in respective folder lcoations
+
+# Declaring all varibales in Error Dataframce
+person_url_error =[] # List of urls of all the companies that returned error while scraping
+ 
+#timeout limit
+timeout_time_seconds=1000
+
+#declaring lists for person properties/basic details data frame    
+person_type =[]
+person_uuid =[]
+person_permalink =[]
+person_api_path =[]
+person_web_path =[]
+person_api_url =[]
+person_first_name =[]
+person_last_name =[]
+person_gender =[]
+person_also_known_as =[]
+person_bio =[]
+person_profile_image_url =[]
+person_role_investor =[]
+person_born_on =[]
+person_born_on_trust_code =[]
+person_died_on =[]
+person_died_on_trust_code =[]
+person_rank =[]
+person_created_at =[]
+person_updated_at =[]
+person_primary_location_total_items =[]
+person_primary_location_type =[]
+person_primary_location_uuid =[]
+person_primary_location_location_type =[]
+person_primary_location_parent_location_uuid =[]
+person_primary_location_city =[]
+person_primary_location_region =[]
+person_primary_location_region_code2 =[]
+person_primary_location_country =[]
+person_primary_location_country_code2 =[]
+person_primary_location_country_code3 =[]
+person_primary_location_continent =[]
+person_primary_location_created_at =[]
+person_primary_location_updated_at =[]
+person_primary_affiliation_total_items =[]
+person_primary_affiliation_type =[]
+person_primary_affiliation_uuid =[]
+person_primary_affiliation_title =[]
+person_primary_affiliation_started_on =[]
+person_primary_affiliation_started_on_trust_code =[]
+person_primary_affiliation_ended_on =[]
+person_primary_affiliation_ended_on_trust_code =[]       
+person_primary_affiliation_is_current =[]
+person_primary_affiliation_job_type =[]
+person_primary_affiliation_created_at =[]
+person_primary_affiliation_updated_at =[]
+person_primary_affiliation_organization_type =[]
+person_primary_affiliation_organization_uuid =[]
+person_primary_affiliation_organization_permalink =[]
+person_primary_affiliation_organization_permalink_aliases =[]
+person_primary_affiliation_organization_api_path =[]
+person_primary_affiliation_organization_web_path =[]
+person_primary_affiliation_organization_api_url =[]
+person_primary_affiliation_organization_name =[]
+person_primary_affiliation_organization_also_known_as =[]
+person_primary_affiliation_organization_short_description =[]
+person_primary_affiliation_organization_description =[]
+person_primary_affiliation_organization_profile_image_url =[]
+person_primary_affiliation_organization_primary_role =[]
+person_primary_affiliation_organization_role_company =[]
+person_primary_affiliation_organization_role_investor =[]
+person_primary_affiliation_organization_role_group =[]
+person_primary_affiliation_organization_role_school =[]
+person_primary_affiliation_organization_investor_type =[]
+person_primary_affiliation_organization_founded_on =[]
+person_primary_affiliation_organization_founded_on_trust_code =[]
+person_primary_affiliation_organization_is_closed =[]
+person_primary_affiliation_organization_closed_on =[]
+person_primary_affiliation_organization_closed_on_trust_code =[]
+person_primary_affiliation_organization_num_employees_min =[]
+person_primary_affiliation_organization_num_employees_max =[]
+person_primary_affiliation_organization_stock_exchange =[]
+person_primary_affiliation_organization_stock_symbol =[]
+person_primary_affiliation_organization_total_funding_usd =[]
+person_primary_affiliation_organization_number_of_investments =[]
+person_primary_affiliation_organization_homepage_url =[]
+person_primary_affiliation_organization_contact_email =[]
+person_primary_affiliation_organization_phone_number =[]
+person_primary_affiliation_organization_rank =[]
+person_primary_affiliation_organization_created_at =[]
+person_primary_affiliation_organization_updated_at =[]
+person_primary_image_total_items =[]
+person_primary_image_type =[]
+person_primary_image_uuid =[]
+person_primary_image_asset_path =[]
+person_primary_image_asset_url =[]
+person_primary_image_content_type =[]
+person_primary_image_height =[]
+person_primary_image_width =[]
+person_primary_image_filesize =[]
+person_primary_image_created_at =[]
+person_primary_image_updated_at =[]
+
+# Declaring all the lists in the persons_Degrees data frame
+company_uuid_person_degree =[]
+company_name_person_degree =[]
+person_uuid_person_degree =[]
+person_first_name_person_degree =[]
+person_last_name_person_degree =[]
+person_degree_type =[]
+person_degree_uuid =[]
+person_degree_started_on =[]
+person_degree_started_on_trust_code =[]
+person_degree_completed_on =[]
+person_degree_completed_on_trust_code =[]
+person_degree_type_name =[]
+person_degree_subject =[]
+person_degree_created_at =[]
+person_degree_updated_at =[]
+person_degree_school_type =[]
+person_degree_school_uuid =[]
+person_degree_school_permalink =[]
+person_degree_school_permalink_aliases =[]
+person_degree_school_api_path =[]
+person_degree_school_web_path =[]
+person_degree_school_api_url =[]
+person_degree_school_name =[]
+person_degree_school_also_known_as =[]
+person_degree_school_short_description =[]
+person_degree_school_description =[]
+person_degree_school_profile_image_url =[]
+person_degree_school_primary_role =[]
+person_degree_school_role_company =[]
+person_degree_school_role_investor =[]
+person_degree_school_role_group =[]
+person_degree_school_role_school =[]
+person_degree_school_investor_type =[]
+person_degree_school_founded_on =[]
+person_degree_school_founded_on_trust_code =[]
+person_degree_school_is_closed =[]
+person_degree_school_closed_on =[]
+person_degree_school_closed_on_trust_code =[]
+person_degree_school_num_employees_min =[]
+person_degree_school_num_employees_max =[]
+person_degree_school_stock_exchange =[]
+person_degree_school_stock_symbol =[]
+person_degree_school_total_funding_usd =[]
+person_degree_school_number_of_investments =[]
+person_degree_school_homepage_url =[]
+person_degree_school_contact_email =[]
+person_degree_school_phone_number =[]
+person_degree_school_rank =[]
+person_degree_school_created_at =[]
+person_degree_school_updated_at =[]
+
+# Declaring all the lists in the persons_Jobs data frame
+company_uuid_person_job =[]
+company_name_person_job =[]
+person_uuid_person_job =[]
+person_first_name_person_job =[]
+person_last_name_person_job =[]
+person_job_type =[]
+person_job_uuid =[]
+person_job_title =[]
+person_job_started_on =[]
+person_job_started_on_trust_code =[]
+person_job_ended_on =[]
+person_job_ended_on_trust_code =[]
+person_job_is_current =[]
+person_job_job_type =[]
+person_job_created_at =[]
+person_job_updated_at =[]
+person_job_organization_type =[]
+person_job_organization_uuid =[]
+person_job_organization_permalink =[]
+person_job_organization_permalink_aliases =[]
+person_job_organization_api_path =[]
+person_job_organization_web_path =[]
+person_job_organization_api_url =[]
+person_job_organization_name =[]
+person_job_organization_also_known_as =[]
+person_job_organization_short_description =[]
+person_job_organization_description =[]
+person_job_organization_profile_image_url =[]
+person_job_organization_primary_role =[]
+person_job_organization_role_company =[]
+person_job_organization_role_investor =[]
+person_job_organization_role_group =[]
+person_job_organization_role_school =[]
+person_job_organization_investor_type =[]
+person_job_organization_founded_on =[]
+person_job_organization_founded_on_trust_code =[]
+person_job_organization_is_closed =[]
+person_job_organization_closed_on =[]
+person_job_organization_closed_on_trust_code =[]
+person_job_organization_num_employees_min =[]
+person_job_organization_num_employees_max =[]
+person_job_organization_stock_exchange =[]
+person_job_organization_stock_symbol =[]
+person_job_organization_total_funding_usd =[]
+person_job_organization_number_of_investments =[]
+person_job_organization_homepage_url =[]
+person_job_organization_contact_email =[]
+person_job_organization_phone_number =[]
+person_job_organization_rank =[]
+person_job_organization_created_at =[]
+person_job_organization_updated_at =[]
+
+# Declaring all the lists in the persons_FoundedCompanies data frame
+company_uuid_person_founded_company =[]
+company_name_person_founded_company =[]
+person_uuid_person_founded_company =[]
+person_first_name_person_founded_company =[]
+person_last_name_person_founded_company =[]
+person_founded_company_type =[]
+person_founded_company_uuid =[]
+person_founded_company_permalink =[]
+person_founded_company_permalink_aliases =[]
+person_founded_company_api_path =[]
+person_founded_company_web_path =[]
+person_founded_company_api_url =[]
+person_founded_company_name =[]
+person_founded_company_also_known_as =[]
+person_founded_company_short_description =[]
+person_founded_company_description =[]
+person_founded_company_profile_image_url =[]
+person_founded_company_primary_role =[]
+person_founded_company_role_company =[]
+person_founded_company_role_investor =[]
+person_founded_company_role_group =[]
+person_founded_company_role_school =[]
+person_founded_company_investor_type =[]
+person_founded_company_founded_on =[]
+person_founded_company_founded_on_trust_code =[]
+person_founded_company_is_closed =[]
+person_founded_company_closed_on =[]
+person_founded_company_closed_on_trust_code =[]
+person_founded_company_num_employees_min =[]
+person_founded_company_num_employees_max =[]
+person_founded_company_stock_exchange =[]
+person_founded_company_stock_symbol =[]
+person_founded_company_total_funding_usd =[]
+person_founded_company_number_of_investments =[]
+person_founded_company_homepage_url =[]
+person_founded_company_contact_email =[]
+person_founded_company_phone_number =[]
+person_founded_company_rank =[]
+person_founded_company_created_at =[]
+person_founded_company_updated_at =[]
+
+# Declaring all the lists in the persons_Websites data frame
+person_website_paging_total_items =[]
+company_uuid_person_website =[]
+company_name_person_website =[]
+person_uuid_person_website =[]
+person_first_name_person_website=[]
+person_last_name_person_website =[]
+person_website_type=[]
+person_website_uuid=[]
+person_website_website_type=[]
+person_website_website_name=[]
+person_website_url=[]
+person_website_created_at=[]
+person_website_updated_at=[]
+
+# Declaring all the lists in the persons_AdvisoryRoles data frame
+
+person_advisory_roles_paging_total_items =[]
+company_uuid_person_advisory_role = []
+company_name_person_advisory_role = []
+person_uuid_person_advisory_role = []
+person_first_name_person_advisory_role = []
+person_last_name_person_advisory_role = []
+person_advisory_role_type = []
+person_advisory_role_uuid = []
+person_advisory_role_title = []
+person_advisory_role_started_on = []
+person_advisory_role_started_on_trust_code = []
+person_advisory_role_ended_on = []
+person_advisory_role_ended_on_trust_code = []
+person_advisory_role_is_current = []
+person_advisory_role_job_type = []
+person_advisory_role_created_at = []
+person_advisory_role_updated_at = []
+person_advisory_role_organization_permalink = []
+person_advisory_role_organization_permalink_aliases = []
+person_advisory_role_organization_api_path = []
+person_advisory_role_organization_web_path = []
+person_advisory_role_organization_api_url = []
+person_advisory_role_organization_name = []
+person_advisory_role_organization_also_known_as = []
+person_advisory_role_organization_short_description = []
+person_advisory_role_organization_description = []
+person_advisory_role_organization_profile_image_url = []
+person_advisory_role_organization_primary_role = []
+person_advisory_role_organization_role_company = []
+person_advisory_role_organization_role_investor = []
+person_advisory_role_organization_role_group = []
+person_advisory_role_organization_role_school = []
+person_advisory_role_organization_investor_type = []
+person_advisory_role_organization_founded_on = []
+person_advisory_role_organization_founded_on_trust_code = []
+person_advisory_role_organization_is_closed = []
+person_advisory_role_organization_closed_on = []
+person_advisory_role_organization_closed_on_trust_code = []
+person_advisory_role_organization_num_employees_min = []
+person_advisory_role_organization_num_employees_max = []
+person_advisory_role_organization_stock_exchange = []
+person_advisory_role_organization_stock_symbol = []
+person_advisory_role_organization_total_funding_usd = []
+person_advisory_role_organization_number_of_investments = []
+person_advisory_role_organization_homepage_url = []
+person_advisory_role_organization_contact_email = []
+person_advisory_role_organization_phone_number = []
+person_advisory_role_organization_rank = []
+person_advisory_role_organization_created_at = []
+person_advisory_role_organization_updated_at = []
+
+# Declaring all the lists in the persons_Investments data frame
+
+person_investments_paging_total_items =[]
+company_uuid_person_investments =[]
+company_name_person_investments =[]
+person_uuid_person_investments =[]
+person_first_name_investments =[]
+person_last_name_person_investments =[]
+person_investment_type =[]
+person_investment_uuid =[]
+person_investment_money_invested =[]
+person_investment_money_invested_currency_code =[]
+person_investment_money_invested_usd =[]
+person_investment_is_lead_investor =[]
+person_investment_announced_on =[]
+person_investment_announced_on_trust_code =[]
+person_investment_created_at =[]
+person_investment_updated_at =[]
+person_investment_funding_round_type =[]
+person_investment_funding_round_uuid =[]
+person_investment_funding_round_permalink =[]
+person_investment_funding_round_api_path =[]
+person_investment_funding_round_web_path =[]
+person_investment_funding_round_api_url =[]
+person_investment_funding_round_funding_type =[]
+person_investment_funding_round_series =[]
+person_investment_funding_round_series_qualifier =[]
+person_investment_funding_round_announced_on =[]
+person_investment_funding_round_announced_on_trust_code =[]
+person_investment_funding_round_closed_on =[]
+person_investment_funding_round_closed_on_trust_code =[]
+person_investment_funding_money_raised =[]
+person_investment_funding_round_money_raised_currency_code =[]
+person_investment_funding_round_money_raised_usd =[]
+person_investment_funding_round_target_money_raised =[]
+person_investment_funding_round_target_money_raised_currency_code =[]
+person_investment_funding_round_target_money_raised_usd =[]
+person_investment_funding_round_pre_money_valuation =[]
+person_investment_funding_round_pre_money_valuation_currency_code =[]
+person_investment_funding_round_pre_money_valuation_usd =[]
+person_investment_funding_round_rank =[]
+person_investment_funding_round_created_at =[]
+person_investment_funding_round_updated_at =[]
+person_investment_funding_round_funded_organization_type =[]
+person_investment_funding_round_funded_organization_uuid =[]
+person_investment_funding_round_funded_organization_permalink =[]
+person_investment_funding_round_funded_organization_permalink_aliases =[]
+person_investment_funding_round_funded_organization_api_path =[]
+person_investment_funding_round_funded_organization_web_path =[]
+person_investment_funding_round_funded_organization_api_url =[]
+person_investment_funding_round_funded_organization_name =[]
+person_investment_funding_round_funded_organization_also_known_as =[]
+person_investment_funding_round_funded_organization_short_description =[]
+person_investment_funding_round_funded_organization_description =[]
+person_investment_funding_round_funded_organization_profile_image_url =[]
+person_investment_funding_round_funded_organization_primary_role =[]
+person_investment_funding_round_funded_organization_role_company =[]
+person_investment_funding_round_funded_organization_role_investor =[]
+person_investment_funding_round_funded_organization_role_group =[]
+person_investment_funding_round_funded_organization_role_school =[]
+person_investment_funding_round_funded_organization_investor_type =[]
+person_investment_funding_round_funded_organization_founded_on =[]
+person_investment_funding_round_funded_organization_founded_on_trust_code =[]
+person_investment_funding_round_funded_organization_is_closed =[]
+person_investment_funding_round_funded_organization_closed_on =[]
+person_investment_funding_round_funded_organization_closed_on_trust_code =[]
+person_investment_funding_round_funded_organization_num_employees_min =[]
+person_investment_funding_round_funded_organization_num_employees_max =[]
+person_investment_funding_round_funded_organization_stock_exchange =[]
+person_investment_funding_round_funded_organization_stock_symbol =[]
+person_investment_funding_round_funded_organization_total_funding_usd =[]
+person_investment_funding_round_funded_organization_number_of_investments =[]
+person_investment_funding_round_funded_organization_homepage_url =[]
+person_investment_funding_round_funded_organization_contact_email =[]
+person_investment_funding_round_funded_organization_phone_number =[]
+person_investment_funding_round_funded_organization_rank =[]
+person_investment_funding_round_funded_organization_created_at =[]
+person_investment_funding_round_funded_organization_updated_at =[]
+
+#going through each person in for loop
+for person_permalink in person_permalink_list:
+    try:
+        person_url= 'https://api.crunchbase.com/v3.1/people/{}?user_key={}'.format(person_permalink, api_key)
+        response = urllib.request.urlopen(person_url, timeout=timeout_time_seconds)
+        data_person = json.loads(response.read().decode())
+        person_properties_details=data_person['data']
+        person_details = data_person['data']['relationships']  
+        
+        #collecting person properties
+        person_type.append(person_properties_details['type'])
+        person_uuid.append(person_properties_details['uuid'])
+        person_permalink.append(person_properties_details['properties']['permalink'])
+        person_api_path.append(person_properties_details['properties']['api_path'])
+        person_web_path.append(person_properties_details['properties']['web_path'])
+        person_api_url.append(person_properties_details['properties']['api_url'])
+        person_first_name.append(person_properties_details['properties']['first_name'])
+        person_last_name.append(person_properties_details['properties']['last_name'])
+        person_gender.append(person_properties_details['properties']['gender'])
+        person_also_known_as.append(person_properties_details['properties']['also_known_as'])
+        person_bio.append(person_properties_details['properties']['bio'])
+        person_profile_image_url.append(person_properties_details['properties']['profile_image_url'])
+        person_role_investor.append(person_properties_details['properties']['role_investor'])
+        person_born_on.append(person_properties_details['properties']['born_on'])
+        person_born_on_trust_code.append(person_properties_details['properties']['born_on_trust_code'])
+        person_died_on.append(person_properties_details['properties']['died_on'])
+        person_died_on_trust_code.append(person_properties_details['properties']['died_on_trust_code'])
+        person_rank.append(person_properties_details['properties']['rank'])
+        person_created_at.append(person_properties_details['properties']['created_at'])
+        person_updated_at.append(person_properties_details['properties']['updated_at'])
+        
+        
+        
+        # Primary locations for each person
+        person_primary_location_total_items.append(person_details['primary_location']['paging']['total_items'])
+        if person_primary_location_total_items[-1] >0: # If person location details are available, append the details
+            person_primary_location_type.append(person_details['primary_location']['item']['type'])
+            person_primary_location_uuid.append(person_details['primary_location']['item']['uuid'])
+            person_primary_location_location_type.append(person_details['primary_location']['item']['properties']['location_type'])
+            person_primary_location_parent_location_uuid.append(person_details['primary_location']['item']['properties']['parent_location_uuid'])
+            person_primary_location_city.append(person_details['primary_location']['item']['properties']['web_path'])
+            person_primary_location_region.append(person_details['primary_location']['item']['properties']['region'])
+            person_primary_location_region_code2.append(person_details['primary_location']['item']['properties']['region_code2'])
+            person_primary_location_country.append(person_details['primary_location']['item']['properties']['country'])
+            person_primary_location_country_code2.append(person_details['primary_location']['item']['properties']['country_code2'])
+            person_primary_location_country_code3.append(person_details['primary_location']['item']['properties']['country_code3'])
+            person_primary_location_continent.append(person_details['primary_location']['item']['properties']['continent'])
+            person_primary_location_created_at.append(person_details['primary_location']['item']['properties']['created_at'])
+            person_primary_location_updated_at.append(person_details['primary_location']['item']['properties']['updated_at'])
+        else: # Else append as missing entries
+            person_primary_location_type.append('')
+            person_primary_location_uuid.append('')
+            person_primary_location_location_type.append('')
+            person_primary_location_parent_location_uuid.append('')
+            person_primary_location_city.append('')
+            person_primary_location_region.append('')
+            person_primary_location_region_code2.append('')
+            person_primary_location_country.append('')
+            person_primary_location_country_code2.append('')
+            person_primary_location_country_code3.append('')
+            person_primary_location_continent.append('')
+            person_primary_location_created_at.append('')
+            person_primary_location_updated_at.append('')            
+            
+        # Primary affiliations for each person
+        person_primary_affiliation_total_items.append(person_details['primary_affiliation']['paging']['total_items'])
+        if person_primary_affiliation_total_items[-1] >0: # If person affiliation details are available, append the details
+            person_primary_affiliation_type.append(person_details['primary_affiliation']['item']['type'])
+            person_primary_affiliation_uuid.append(person_details['primary_affiliation']['item']['uuid'])
+            person_primary_affiliation_title.append(person_details['primary_affiliation']['item']['properties']['title'])
+            person_primary_affiliation_started_on.append(person_details['primary_affiliation']['item']['properties']['started_on'])
+            person_primary_affiliation_started_on_trust_code.append(person_details['primary_affiliation']['item']['properties']['started_on_trust_code'])
+            person_primary_affiliation_ended_on.append(person_details['primary_affiliation']['item']['properties']['ended_on'])
+            person_primary_affiliation_ended_on_trust_code.append(person_details['primary_affiliation']['item']['properties']['ended_on_trust_code'])            
+            person_primary_affiliation_is_current.append(person_details['primary_affiliation']['item']['properties']['is_current'])
+            person_primary_affiliation_job_type.append(person_details['primary_affiliation']['item']['properties']['job_type'])
+            person_primary_affiliation_created_at.append(person_details['primary_affiliation']['item']['properties']['created_at'])
+            person_primary_affiliation_updated_at.append(person_details['primary_affiliation']['item']['properties']['updated_at'])
+            person_primary_affiliation_organization_type.append(person_details['primary_affiliation']['item']['relationships']['organization']['type'])
+            person_primary_affiliation_organization_uuid.append(person_details['primary_affiliation']['item']['relationships']['organization']['uuid'])
+            person_primary_affiliation_organization_permalink.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['permalink'])
+            person_primary_affiliation_organization_permalink_aliases.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['permalink_aliases'])
+            person_primary_affiliation_organization_api_path.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['api_path'])
+            person_primary_affiliation_organization_web_path.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['web_path'])
+            person_primary_affiliation_organization_api_url.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['api_url'])
+            person_primary_affiliation_organization_name.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['name'])
+            person_primary_affiliation_organization_also_known_as.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['also_known_as'])
+            person_primary_affiliation_organization_short_description.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['short_description'])
+            person_primary_affiliation_organization_description.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['description'])
+            person_primary_affiliation_organization_profile_image_url.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['profile_image_url'])
+            person_primary_affiliation_organization_primary_role.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['primary_role'])
+            person_primary_affiliation_organization_role_company.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['role_company'])
+            person_primary_affiliation_organization_role_investor.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['role_investor'])
+            person_primary_affiliation_organization_role_group.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['role_group'])
+            person_primary_affiliation_organization_role_school.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['role_school'])
+            person_primary_affiliation_organization_investor_type.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['investor_type'])
+            person_primary_affiliation_organization_founded_on.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['founded_on'])
+            person_primary_affiliation_organization_founded_on_trust_code.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['founded_on_trust_code'])
+            person_primary_affiliation_organization_is_closed.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['is_closed'])
+            person_primary_affiliation_organization_closed_on.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['closed_on'])
+            person_primary_affiliation_organization_closed_on_trust_code.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['closed_on_trust_code'])
+            person_primary_affiliation_organization_num_employees_min.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['num_employees_min'])
+            person_primary_affiliation_organization_num_employees_max.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['num_employees_max'])
+            person_primary_affiliation_organization_stock_exchange.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['stock_exchange'])
+            person_primary_affiliation_organization_stock_symbol.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['stock_symbol'])
+            person_primary_affiliation_organization_total_funding_usd.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['total_funding_usd'])
+            person_primary_affiliation_organization_number_of_investments.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['number_of_investments'])
+            person_primary_affiliation_organization_homepage_url.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['homepage_url'])
+            person_primary_affiliation_organization_contact_email.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['contact_email'])
+            person_primary_affiliation_organization_phone_number.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['phone_number'])
+            person_primary_affiliation_organization_rank.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['rank'])
+            person_primary_affiliation_organization_created_at.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['created_at'])
+            person_primary_affiliation_organization_updated_at.append(person_details['primary_affiliation']['item']['relationships']['organization']['properties']['updated_at'])
+        else: # Else append as missing entries
+            person_primary_affiliation_type.append('')
+            person_primary_affiliation_uuid.append('')
+            person_primary_affiliation_title.append('')
+            person_primary_affiliation_started_on.append('')
+            person_primary_affiliation_started_on_trust_code.append('')
+            person_primary_affiliation_ended_on.append('')
+            person_primary_affiliation_ended_on_trust_code.append('')            
+            person_primary_affiliation_is_current.append('')
+            person_primary_affiliation_job_type.append('')
+            person_primary_affiliation_created_at.append('')
+            person_primary_affiliation_updated_at.append('')
+            person_primary_affiliation_organization_type.append('')
+            person_primary_affiliation_organization_uuid.append('')
+            person_primary_affiliation_organization_permalink.append('')
+            person_primary_affiliation_organization_permalink_aliases.append('')
+            person_primary_affiliation_organization_api_path.append('')
+            person_primary_affiliation_organization_web_path.append('')
+            person_primary_affiliation_organization_api_url.append('')
+            person_primary_affiliation_organization_name.append('')
+            person_primary_affiliation_organization_also_known_as.append('')
+            person_primary_affiliation_organization_short_description.append('')
+            person_primary_affiliation_organization_description.append('')
+            person_primary_affiliation_organization_profile_image_url.append('')
+            person_primary_affiliation_organization_primary_role.append('')
+            person_primary_affiliation_organization_role_company.append('')
+            person_primary_affiliation_organization_role_investor.append('')
+            person_primary_affiliation_organization_role_group.append('')
+            person_primary_affiliation_organization_role_school.append('')
+            person_primary_affiliation_organization_investor_type.append('')
+            person_primary_affiliation_organization_founded_on.append('')
+            person_primary_affiliation_organization_founded_on_trust_code.append('')
+            person_primary_affiliation_organization_is_closed.append('')
+            person_primary_affiliation_organization_closed_on.append('')
+            person_primary_affiliation_organization_closed_on_trust_code.append('')
+            person_primary_affiliation_organization_num_employees_min.append('')
+            person_primary_affiliation_organization_num_employees_max.append('')
+            person_primary_affiliation_organization_stock_exchange.append('')
+            person_primary_affiliation_organization_stock_symbol.append('')
+            person_primary_affiliation_organization_total_funding_usd.append('')
+            person_primary_affiliation_organization_number_of_investments.append('')
+            person_primary_affiliation_organization_homepage_url.append('')
+            person_primary_affiliation_organization_contact_email.append('')
+            person_primary_affiliation_organization_phone_number.append('')
+            person_primary_affiliation_organization_rank.append('')
+            person_primary_affiliation_organization_created_at.append('')
+            person_primary_affiliation_organization_updated_at.append('')
+        
+        # Primary image details for each person
+        person_primary_image_total_items.append(person_details['primary_image']['paging']['total_items'])
+        if person_primary_image_total_items[-1] >0: # If person primary image details are available, append the details
+            person_primary_image_type.append(person_details['primary_image']['item']['type'])
+            person_primary_image_uuid.append(person_details['primary_image']['item']['uuid'])
+            person_primary_image_asset_path.append(person_details['primary_image']['item']['properties']['asset_path'])
+            person_primary_image_asset_url.append(person_details['primary_image']['item']['properties']['asset_url'])
+            person_primary_image_content_type.append(person_details['primary_image']['item']['properties']['content_type'])
+            person_primary_image_height.append(person_details['primary_image']['item']['properties']['height'])
+            person_primary_image_width.append(person_details['primary_image']['item']['properties']['width'])
+            person_primary_image_filesize.append(person_details['primary_image']['item']['properties']['filesize'])
+            person_primary_image_created_at.append(person_details['primary_image']['item']['properties']['created_at'])
+            person_primary_image_updated_at.append(person_details['primary_image']['item']['properties']['updated_at'])
+        else: # Else append as missing entries
+            person_primary_image_type.append('')
+            person_primary_image_uuid.append('')
+            person_primary_image_asset_path.append('')
+            person_primary_image_asset_url.append('')
+            person_primary_image_content_type.append('')
+            person_primary_image_height.append('')
+            person_primary_image_width.append('')
+            person_primary_image_filesize.append('')
+            person_primary_image_created_at.append('')
+            person_primary_image_updated_at.append('')
+        
+        # All degrees for each person
+        for person_degrees in data_person['data']['relationships']['degrees']['items']:
+            person_uuid_person_degree.append(person_properties_details['uuid'])
+            person_first_name_person_degree.append(person_properties_details['properties']['first_name'])
+            person_last_name_person_degree.append(person_properties_details['properties']['last_name'])
+            person_degree_type.append(person_degrees['type'])
+            person_degree_uuid.append(person_degrees['uuid'])
+            person_degree_started_on.append(person_degrees['properties']['started_on'])
+            person_degree_started_on_trust_code.append(person_degrees['properties']['started_on_trust_code'])
+            person_degree_completed_on.append(person_degrees['properties']['completed_on'])
+            person_degree_completed_on_trust_code.append(person_degrees['properties']['completed_on_trust_code'])
+            person_degree_type_name.append(person_degrees['properties']['degree_type_name'])
+            person_degree_subject.append(person_degrees['properties']['degree_subject'])
+            person_degree_created_at.append(person_degrees['properties']['created_at'])
+            person_degree_updated_at.append(person_degrees['properties']['updated_at'])
+            person_degree_school_type.append(person_degrees['relationships']['school']['type'])
+            person_degree_school_uuid.append(person_degrees['relationships']['school']['uuid'])
+            person_degree_school_permalink.append(person_degrees['relationships']['school']['properties']['permalink'])
+            person_degree_school_permalink_aliases.append(person_degrees['relationships']['school']['properties']['permalink_aliases'])
+            person_degree_school_api_path.append(person_degrees['relationships']['school']['properties']['api_path'])
+            person_degree_school_web_path.append(person_degrees['relationships']['school']['properties']['web_path'])
+            person_degree_school_api_url.append(person_degrees['relationships']['school']['properties']['api_url'])
+            person_degree_school_name.append(person_degrees['relationships']['school']['properties']['name'])
+            person_degree_school_also_known_as.append(person_degrees['relationships']['school']['properties']['also_known_as'])
+            person_degree_school_short_description.append(person_degrees['relationships']['school']['properties']['short_description'])
+            person_degree_school_description.append(person_degrees['relationships']['school']['properties']['description'])
+            person_degree_school_profile_image_url.append(person_degrees['relationships']['school']['properties']['profile_image_url'])
+            person_degree_school_primary_role.append(person_degrees['relationships']['school']['properties']['primary_role'])
+            person_degree_school_role_company.append(person_degrees['relationships']['school']['properties']['role_company'])
+            person_degree_school_role_investor.append(person_degrees['relationships']['school']['properties']['role_investor'])
+            person_degree_school_role_group.append(person_degrees['relationships']['school']['properties']['role_group'])
+            person_degree_school_role_school.append(person_degrees['relationships']['school']['properties']['role_school'])
+            person_degree_school_investor_type.append(person_degrees['relationships']['school']['properties']['investor_type'])
+            person_degree_school_founded_on.append(person_degrees['relationships']['school']['properties']['founded_on'])
+            person_degree_school_founded_on_trust_code.append(person_degrees['relationships']['school']['properties']['founded_on_trust_code'])
+            person_degree_school_is_closed.append(person_degrees['relationships']['school']['properties']['is_closed'])
+            person_degree_school_closed_on.append(person_degrees['relationships']['school']['properties']['closed_on'])
+            person_degree_school_closed_on_trust_code.append(person_degrees['relationships']['school']['properties']['closed_on_trust_code'])
+            person_degree_school_num_employees_min.append(person_degrees['relationships']['school']['properties']['num_employees_min'])
+            person_degree_school_num_employees_max.append(person_degrees['relationships']['school']['properties']['num_employees_max'])
+            person_degree_school_stock_exchange.append(person_degrees['relationships']['school']['properties']['stock_exchange'])
+            person_degree_school_stock_symbol.append(person_degrees['relationships']['school']['properties']['stock_symbol'])
+            person_degree_school_total_funding_usd.append(person_degrees['relationships']['school']['properties']['total_funding_usd'])
+            person_degree_school_number_of_investments.append(person_degrees['relationships']['school']['properties']['number_of_investments'])
+            person_degree_school_homepage_url.append(person_degrees['relationships']['school']['properties']['homepage_url'])
+            person_degree_school_contact_email.append(person_degrees['relationships']['school']['properties']['contact_email'])
+            person_degree_school_phone_number.append(person_degrees['relationships']['school']['properties']['phone_number'])
+            person_degree_school_rank.append(person_degrees['relationships']['school']['properties']['rank'])
+            person_degree_school_created_at.append(person_degrees['relationships']['school']['properties']['created_at'])
+            person_degree_school_updated_at.append(person_degrees['relationships']['school']['properties']['updated_at'])
+            
+        # All jobs for each person
+        for person_jobs in data_person['data']['relationships']['jobs']['items']:
+            person_uuid_person_job.append(person_properties_details['uuid'])
+            person_first_name_person_job.append(person_properties_details['properties']['first_name'])
+            person_last_name_person_job.append(person_properties_details['properties']['last_name'])
+            person_job_type.append(person_jobs['type'])
+            person_job_uuid.append(person_jobs['uuid'])
+            person_job_title.append(person_jobs['properties']['title'])
+            person_job_started_on.append(person_jobs['properties']['started_on'])
+            person_job_started_on_trust_code.append(person_jobs['properties']['started_on_trust_code'])
+            person_job_ended_on.append(person_jobs['properties']['ended_on'])
+            person_job_ended_on_trust_code.append(person_jobs['properties']['ended_on_trust_code'])
+            person_job_is_current.append(person_jobs['properties']['is_current'])
+            person_job_job_type.append(person_jobs['properties']['job_type'])
+            person_job_created_at.append(person_jobs['properties']['created_at'])
+            person_job_updated_at.append(person_jobs['properties']['updated_at'])
+            person_job_organization_type.append(person_jobs['relationships']['organization']['type'])
+            person_job_organization_uuid.append(person_jobs['relationships']['organization']['uuid'])
+            person_job_organization_permalink.append(person_jobs['relationships']['organization']['properties']['permalink'])
+            person_job_organization_permalink_aliases.append(person_jobs['relationships']['organization']['properties']['permalink_aliases'])
+            person_job_organization_api_path.append(person_jobs['relationships']['organization']['properties']['api_path'])
+            person_job_organization_web_path.append(person_jobs['relationships']['organization']['properties']['web_path'])
+            person_job_organization_api_url.append(person_jobs['relationships']['organization']['properties']['api_url'])
+            person_job_organization_name.append(person_jobs['relationships']['organization']['properties']['name'])
+            person_job_organization_also_known_as.append(person_jobs['relationships']['organization']['properties']['also_known_as'])
+            person_job_organization_short_description.append(person_jobs['relationships']['organization']['properties']['short_description'])
+            person_job_organization_description.append(person_jobs['relationships']['organization']['properties']['description'])
+            person_job_organization_profile_image_url.append(person_jobs['relationships']['organization']['properties']['profile_image_url'])
+            person_job_organization_primary_role.append(person_jobs['relationships']['organization']['properties']['primary_role'])
+            person_job_organization_role_company.append(person_jobs['relationships']['organization']['properties']['role_company'])
+            person_job_organization_role_investor.append(person_jobs['relationships']['organization']['properties']['role_investor'])
+            person_job_organization_role_group.append(person_jobs['relationships']['organization']['properties']['role_group'])
+            person_job_organization_role_school.append(person_jobs['relationships']['organization']['properties']['role_school'])
+            person_job_organization_investor_type.append(person_jobs['relationships']['organization']['properties']['investor_type'])
+            person_job_organization_founded_on.append(person_jobs['relationships']['organization']['properties']['founded_on'])
+            person_job_organization_founded_on_trust_code.append(person_jobs['relationships']['organization']['properties']['founded_on_trust_code'])
+            person_job_organization_is_closed.append(person_jobs['relationships']['organization']['properties']['is_closed'])
+            person_job_organization_closed_on.append(person_jobs['relationships']['organization']['properties']['closed_on'])
+            person_job_organization_closed_on_trust_code.append(person_jobs['relationships']['organization']['properties']['closed_on_trust_code'])
+            person_job_organization_num_employees_min.append(person_jobs['relationships']['organization']['properties']['num_employees_min'])
+            person_job_organization_num_employees_max.append(person_jobs['relationships']['organization']['properties']['num_employees_max'])
+            person_job_organization_stock_exchange.append(person_jobs['relationships']['organization']['properties']['stock_exchange'])
+            person_job_organization_stock_symbol.append(person_jobs['relationships']['organization']['properties']['stock_symbol'])
+            person_job_organization_total_funding_usd.append(person_jobs['relationships']['organization']['properties']['total_funding_usd'])
+            person_job_organization_number_of_investments.append(person_jobs['relationships']['organization']['properties']['number_of_investments'])
+            person_job_organization_homepage_url.append(person_jobs['relationships']['organization']['properties']['homepage_url'])
+            person_job_organization_contact_email.append(person_jobs['relationships']['organization']['properties']['contact_email'])
+            person_job_organization_phone_number.append(person_jobs['relationships']['organization']['properties']['phone_number'])
+            person_job_organization_rank.append(person_jobs['relationships']['organization']['properties']['rank'])
+            person_job_organization_created_at.append(person_jobs['relationships']['organization']['properties']['created_at'])
+            person_job_organization_updated_at.append(person_jobs['relationships']['organization']['properties']['updated_at'])
+            
+        # All companies founded by each fonder
+        for person_founded_companies in data_person['data']['relationships']['founded_companies']['items']:
+            person_uuid_person_founded_company.append(person_properties_details['uuid'])
+            person_first_name_person_founded_company.append(person_properties_details['properties']['first_name'])
+            person_last_name_person_founded_company.append(person_properties_details['properties']['last_name'])
+            person_founded_company_type.append(person_founded_companies['type'])
+            person_founded_company_uuid.append(person_founded_companies['uuid'])
+            person_founded_company_permalink.append(person_founded_companies['properties']['permalink'])
+            person_founded_company_permalink_aliases.append(person_founded_companies['properties']['permalink_aliases'])
+            person_founded_company_api_path.append(person_founded_companies['properties']['api_path'])
+            person_founded_company_web_path.append(person_founded_companies['properties']['web_path'])
+            person_founded_company_api_url.append(person_founded_companies['properties']['api_url'])
+            person_founded_company_name.append(person_founded_companies['properties']['name'])
+            person_founded_company_also_known_as.append(person_founded_companies['properties']['also_known_as'])
+            person_founded_company_short_description.append(person_founded_companies['properties']['short_description'])
+            person_founded_company_description.append(person_founded_companies['properties']['description'])
+            person_founded_company_profile_image_url.append(person_founded_companies['properties']['profile_image_url'])
+            person_founded_company_primary_role.append(person_founded_companies['properties']['primary_role'])
+            person_founded_company_role_company.append(person_founded_companies['properties']['role_company'])
+            person_founded_company_role_investor.append(person_founded_companies['properties']['role_investor'])
+            person_founded_company_role_group.append(person_founded_companies['properties']['role_group'])
+            person_founded_company_role_school.append(person_founded_companies['properties']['role_school'])
+            person_founded_company_investor_type.append(person_founded_companies['properties']['investor_type'])
+            person_founded_company_founded_on.append(person_founded_companies['properties']['founded_on'])
+            person_founded_company_founded_on_trust_code.append(person_founded_companies['properties']['founded_on_trust_code'])
+            person_founded_company_is_closed.append(person_founded_companies['properties']['is_closed'])
+            person_founded_company_closed_on.append(person_founded_companies['properties']['closed_on'])
+            person_founded_company_closed_on_trust_code.append(person_founded_companies['properties']['closed_on_trust_code'])
+            person_founded_company_num_employees_min.append(person_founded_companies['properties']['num_employees_min'])
+            person_founded_company_num_employees_max.append(person_founded_companies['properties']['num_employees_max'])
+            person_founded_company_stock_exchange.append(person_founded_companies['properties']['stock_exchange'])
+            person_founded_company_stock_symbol.append(person_founded_companies['properties']['stock_symbol'])
+            person_founded_company_total_funding_usd.append(person_founded_companies['properties']['total_funding_usd'])
+            person_founded_company_number_of_investments.append(person_founded_companies['properties']['number_of_investments'])
+            person_founded_company_homepage_url.append(person_founded_companies['properties']['homepage_url'])
+            person_founded_company_contact_email.append(person_founded_companies['properties']['contact_email'])
+            person_founded_company_phone_number.append(person_founded_companies['properties']['phone_number'])
+            person_founded_company_rank.append(person_founded_companies['properties']['rank'])
+            person_founded_company_created_at.append(person_founded_companies['properties']['created_at'])
+            person_founded_company_updated_at.append(person_founded_companies['properties']['updated_at'])
+         
+        # All website urls (Facebook, Twitter, and LinkedIn) for each person
+        person_website_paging_total_items.append(person_details['websites']['paging']['total_items'])
+        if person_website_paging_total_items[-1]>0: # If person website details are available, append the details
+            for person_websites in data_person['data']['relationships']['websites']['items']:
+            
+            
+                person_uuid_person_website.append(person_properties_details['uuid'])
+                person_first_name_person_website.append(person_properties_details['properties']['first_name'])
+                person_last_name_person_website.append(person_properties_details['properties']['last_name'])
+                person_website_type.append(person_websites['type'])
+                person_website_uuid.append(person_websites['uuid'])
+                person_website_website_type.append(person_websites['properties']['website_type'])
+                person_website_website_name.append(person_websites['properties']['website_name'])
+                person_website_url.append(person_websites['properties']['url'])
+                person_website_created_at.append(person_websites['properties']['created_at'])
+                person_website_updated_at.append(person_websites['properties']['updated_at'])                    
+        else: # Else append as missing entries
+            person_uuid_person_website.append(person_properties_details['uuid'])
+            person_first_name_person_website.append(person_properties_details['properties']['first_name'])
+            person_last_name_person_website.append(person_properties_details['properties']['last_name'])
+            person_website_type.append('')
+            person_website_uuid.append('')
+            person_website_website_type.append('')
+            person_website_website_name.append('')
+            person_website_url.append('')
+            person_website_created_at.append('')
+            person_website_updated_at.append('')
+                
+        # All advisory roles for each person
+        person_advisory_roles_paging_total_items.append(person_details['advisory_roles']['paging']['total_items'])
+        if person_advisory_roles_paging_total_items[-1]>0: # If person website details are available, append the details
+            for person_advisory_roles in data_person['data']['relationships']['advisory_roles']['items']:
+            
+                person_uuid_person_advisory_role.append(person_properties_details['uuid'])
+                person_first_name_person_advisory_role.append(person_properties_details['properties']['first_name'])
+                person_last_name_person_advisory_role.append(person_properties_details['properties']['last_name'])
+                person_advisory_role_type.append(person_advisory_roles['type'])
+                person_advisory_role_uuid.append(person_advisory_roles['uuid'])
+                person_advisory_role_title.append(person_advisory_roles['properties']['title'])
+                person_advisory_role_started_on.append(person_advisory_roles['properties']['started_on'])
+                person_advisory_role_started_on_trust_code.append(person_advisory_roles['properties']['started_on_trust_code'])
+                person_advisory_role_ended_on.append(person_advisory_roles['properties']['ended_on'])
+                person_advisory_role_ended_on_trust_code.append(person_advisory_roles['properties']['ended_on_trust_code'])
+                person_advisory_role_is_current.append(person_advisory_roles['properties']['is_current'])
+                person_advisory_role_job_type.append(person_advisory_roles['properties']['job_type'])
+                person_advisory_role_created_at.append(person_advisory_roles['properties']['created_at'])
+                person_advisory_role_updated_at.append(person_advisory_roles['properties']['updated_at'])
+                person_advisory_role_organization_permalink.append(person_advisory_roles['relationships']['organization']['properties']['permalink'])
+                person_advisory_role_organization_permalink_aliases.append(person_advisory_roles['relationships']['organization']['properties']['permalink_aliases'])
+                person_advisory_role_organization_api_path.append(person_advisory_roles['relationships']['organization']['properties']['api_path'])
+                person_advisory_role_organization_web_path.append(person_advisory_roles['relationships']['organization']['properties']['web_path'])
+                person_advisory_role_organization_api_url.append(person_advisory_roles['relationships']['organization']['properties']['api_url'])
+                person_advisory_role_organization_name.append(person_advisory_roles['relationships']['organization']['properties']['name'])
+                person_advisory_role_organization_also_known_as.append(person_advisory_roles['relationships']['organization']['properties']['also_known_as'])
+                person_advisory_role_organization_short_description.append(person_advisory_roles['relationships']['organization']['properties']['short_description'])
+                person_advisory_role_organization_description.append(person_advisory_roles['relationships']['organization']['properties']['description'])
+                person_advisory_role_organization_profile_image_url.append(person_advisory_roles['relationships']['organization']['properties']['profile_image_url'])
+                person_advisory_role_organization_primary_role.append(person_advisory_roles['relationships']['organization']['properties']['primary_role'])
+                person_advisory_role_organization_role_company.append(person_advisory_roles['relationships']['organization']['properties']['role_company'])
+                person_advisory_role_organization_role_investor.append(person_advisory_roles['relationships']['organization']['properties']['role_investor'])
+                person_advisory_role_organization_role_group.append(person_advisory_roles['relationships']['organization']['properties']['role_group'])
+                person_advisory_role_organization_role_school.append(person_advisory_roles['relationships']['organization']['properties']['role_school'])
+                person_advisory_role_organization_investor_type.append(person_advisory_roles['relationships']['organization']['properties']['investor_type'])
+                person_advisory_role_organization_founded_on.append(person_advisory_roles['relationships']['organization']['properties']['founded_on'])
+                person_advisory_role_organization_founded_on_trust_code.append(person_advisory_roles['relationships']['organization']['properties']['founded_on_trust_code'])
+                person_advisory_role_organization_is_closed.append(person_advisory_roles['relationships']['organization']['properties']['is_closed'])
+                person_advisory_role_organization_closed_on.append(person_advisory_roles['relationships']['organization']['properties']['closed_on'])
+                person_advisory_role_organization_closed_on_trust_code.append(person_advisory_roles['relationships']['organization']['properties']['closed_on_trust_code'])
+                person_advisory_role_organization_num_employees_min.append(person_advisory_roles['relationships']['organization']['properties']['num_employees_min'])
+                person_advisory_role_organization_num_employees_max.append(person_advisory_roles['relationships']['organization']['properties']['num_employees_max'])
+                person_advisory_role_organization_stock_exchange.append(person_advisory_roles['relationships']['organization']['properties']['stock_exchange'])
+                person_advisory_role_organization_stock_symbol.append(person_advisory_roles['relationships']['organization']['properties']['stock_symbol'])
+                person_advisory_role_organization_total_funding_usd.append(person_advisory_roles['relationships']['organization']['properties']['total_funding_usd'])
+                person_advisory_role_organization_number_of_investments.append(person_advisory_roles['relationships']['organization']['properties']['number_of_investments'])
+                person_advisory_role_organization_homepage_url.append(person_advisory_roles['relationships']['organization']['properties']['homepage_url'])
+                person_advisory_role_organization_contact_email.append(person_advisory_roles['relationships']['organization']['properties']['contact_email'])
+                person_advisory_role_organization_phone_number.append(person_advisory_roles['relationships']['organization']['properties']['phone_number'])
+                person_advisory_role_organization_rank.append(person_advisory_roles['relationships']['organization']['properties']['rank'])
+                person_advisory_role_organization_created_at.append(person_advisory_roles['relationships']['organization']['properties']['created_at'])
+                person_advisory_role_organization_updated_at.append(person_advisory_roles['relationships']['organization']['properties']['updated_at'])
+                
+        else: # Else append as missing entries
+            person_uuid_person_advisory_role.append(person_properties_details['uuid'])
+            person_first_name_person_advisory_role.append(person_properties_details['properties']['first_name'])
+            person_last_name_person_advisory_role.append(person_properties_details['properties']['last_name'])
+            person_advisory_role_type.append('')
+            person_advisory_role_uuid.append('')
+            person_advisory_role_title.append('')
+            person_advisory_role_started_on.append('')
+            person_advisory_role_started_on_trust_code.append('')
+            person_advisory_role_ended_on.append('')
+            person_advisory_role_ended_on_trust_code.append('')
+            person_advisory_role_is_current.append('')
+            person_advisory_role_job_type.append('')
+            person_advisory_role_created_at.append('')
+            person_advisory_role_updated_at.append('')
+            person_advisory_role_organization_permalink.append('')
+            person_advisory_role_organization_permalink_aliases.append('')
+            person_advisory_role_organization_api_path.append('')
+            person_advisory_role_organization_web_path.append('')
+            person_advisory_role_organization_api_url.append('')
+            person_advisory_role_organization_name.append('')
+            person_advisory_role_organization_also_known_as.append('')
+            person_advisory_role_organization_short_description.append('')
+            person_advisory_role_organization_description.append('')
+            person_advisory_role_organization_profile_image_url.append('')
+            person_advisory_role_organization_primary_role.append('')
+            person_advisory_role_organization_role_company.append('')
+            person_advisory_role_organization_role_investor.append('')
+            person_advisory_role_organization_role_group.append('')
+            person_advisory_role_organization_role_school.append('')
+            person_advisory_role_organization_investor_type.append('')
+            person_advisory_role_organization_founded_on.append('')
+            person_advisory_role_organization_founded_on_trust_code.append('')
+            person_advisory_role_organization_is_closed.append('')
+            person_advisory_role_organization_closed_on.append('')
+            person_advisory_role_organization_closed_on_trust_code.append('')
+            person_advisory_role_organization_num_employees_min.append('')
+            person_advisory_role_organization_num_employees_max.append('')
+            person_advisory_role_organization_stock_exchange.append('')
+            person_advisory_role_organization_stock_symbol.append('')
+            person_advisory_role_organization_total_funding_usd.append('')
+            person_advisory_role_organization_number_of_investments.append('')
+            person_advisory_role_organization_homepage_url.append('')
+            person_advisory_role_organization_contact_email.append('')
+            person_advisory_role_organization_phone_number.append('')
+            person_advisory_role_organization_rank.append('')
+            person_advisory_role_organization_created_at.append('')
+            person_advisory_role_organization_updated_at.append('')
+        
+        # All investments made by each person
+        person_investments_paging_total_items.append(person_details['investments']['paging']['total_items'])
+        if person_investments_paging_total_items[-1]>0: # If person website details are available, append the details
+            page=1
+            
+            person_investments_url = person_details['investments']['paging']['first_page_url']+'?user_key={}'.format(api_key)
+            response = urllib.request.urlopen(person_investments_url, timeout=timeout_time_seconds)
+            data_person_investments = json.loads(response.read().decode())
+            person_investments_paging_number_of_pages= data_person_investments['data']['paging']['number_of_pages']
+        
+            while page <= person_investments_paging_number_of_pages: # Pagination - For any item, CrunchBase API shows at most 100 entries per page. For items with over 100 entries, we have to scrape details from each page
+                person_investments_url = person_details['investments']['paging']['first_page_url'] + '?page={}&sort_order=announced_on%20DESC&items_per_page=100&user_key={}'.format(page, api_key)
+                
+                
+                response = urllib.request.urlopen(person_investments_url, timeout=timeout_time_seconds)
+                data_person_investments = json.loads(response.read().decode())
+                page = page+1
+                for person_investments in data_person_investments['data']['items']:
+                    
+                    person_uuid_person_investments.append(person_properties_details['uuid'])
+                    person_first_name_investments.append(person_properties_details['properties']['first_name'])
+                    person_last_name_person_investments.append(person_properties_details['properties']['last_name'])
+                    person_investment_type.append(person_investments['type'])
+                    person_investment_uuid.append(person_investments['uuid'])
+                    person_investment_money_invested.append(person_investments['properties']['money_invested'])
+                    person_investment_money_invested_currency_code.append(person_investments['properties']['money_invested_currency_code'])
+                    person_investment_money_invested_usd.append(person_investments['properties']['money_invested_usd'])
+                    person_investment_is_lead_investor.append(person_investments['properties']['is_lead_investor'])
+                    person_investment_announced_on.append(person_investments['properties']['announced_on'])
+                    person_investment_announced_on_trust_code.append(person_investments['properties']['announced_on_trust_code'])
+                    person_investment_created_at.append(person_investments['properties']['created_at'])
+                    person_investment_updated_at.append(person_investments['properties']['updated_at'])
+                    person_investment_funding_round_type.append(person_investments['relationships']['funding_round']['type'])
+                    person_investment_funding_round_uuid.append(person_investments['relationships']['funding_round']['uuid'])
+                    person_investment_funding_round_permalink.append(person_investments['relationships']['funding_round']['properties']['permalink'])
+                    person_investment_funding_round_api_path.append(person_investments['relationships']['funding_round']['properties']['api_path'])
+                    person_investment_funding_round_web_path.append(person_investments['relationships']['funding_round']['properties']['web_path'])
+                    person_investment_funding_round_api_url.append(person_investments['relationships']['funding_round']['properties']['api_url'])
+                    person_investment_funding_round_funding_type.append(person_investments['relationships']['funding_round']['properties']['funding_type'])
+                    person_investment_funding_round_series.append(person_investments['relationships']['funding_round']['properties']['series'])
+                    person_investment_funding_round_series_qualifier.append(person_investments['relationships']['funding_round']['properties']['series_qualifier'])
+                    person_investment_funding_round_announced_on.append(person_investments['relationships']['funding_round']['properties']['announced_on'])
+                    person_investment_funding_round_announced_on_trust_code.append(person_investments['relationships']['funding_round']['properties']['announced_on_trust_code'])
+                    person_investment_funding_round_closed_on.append(person_investments['relationships']['funding_round']['properties']['closed_on'])
+                    person_investment_funding_round_closed_on_trust_code.append(person_investments['relationships']['funding_round']['properties']['closed_on_trust_code'])
+                    person_investment_funding_money_raised.append(person_investments['relationships']['funding_round']['properties']['money_raised'])
+                    person_investment_funding_round_money_raised_currency_code.append(person_investments['relationships']['funding_round']['properties']['money_raised_currency_code'])
+                    person_investment_funding_round_money_raised_usd.append(person_investments['relationships']['funding_round']['properties']['money_raised_usd'])
+                    person_investment_funding_round_target_money_raised.append(person_investments['relationships']['funding_round']['properties']['target_money_raised'])
+                    person_investment_funding_round_target_money_raised_currency_code.append(person_investments['relationships']['funding_round']['properties']['target_money_raised_currency_code'])
+                    person_investment_funding_round_target_money_raised_usd.append(person_investments['relationships']['funding_round']['properties']['target_money_raised_usd'])
+                    person_investment_funding_round_pre_money_valuation.append(person_investments['relationships']['funding_round']['properties']['pre_money_valuation'])
+                    person_investment_funding_round_pre_money_valuation_currency_code.append(person_investments['relationships']['funding_round']['properties']['pre_money_valuation_currency_code'])
+                    person_investment_funding_round_pre_money_valuation_usd.append(person_investments['relationships']['funding_round']['properties']['pre_money_valuation_usd'])
+                    person_investment_funding_round_rank.append(person_investments['relationships']['funding_round']['properties']['rank'])
+                    person_investment_funding_round_created_at.append(person_investments['relationships']['funding_round']['properties']['created_at'])
+                    person_investment_funding_round_updated_at.append(person_investments['relationships']['funding_round']['properties']['updated_at'])
+                    person_investment_funding_round_funded_organization_type.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['type'])
+                    person_investment_funding_round_funded_organization_uuid.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['uuid'])
+                    person_investment_funding_round_funded_organization_permalink.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['permalink'])
+                    person_investment_funding_round_funded_organization_permalink_aliases.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['permalink_aliases'])
+                    person_investment_funding_round_funded_organization_api_path.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['api_path'])
+                    person_investment_funding_round_funded_organization_web_path.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['web_path'])
+                    person_investment_funding_round_funded_organization_api_url.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['api_url'])
+                    person_investment_funding_round_funded_organization_name.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['name'])
+                    person_investment_funding_round_funded_organization_also_known_as.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['also_known_as'])
+                    person_investment_funding_round_funded_organization_short_description.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['short_description'])
+                    person_investment_funding_round_funded_organization_description.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['description'])
+                    person_investment_funding_round_funded_organization_profile_image_url.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['profile_image_url'])
+                    person_investment_funding_round_funded_organization_primary_role.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['primary_role'])
+                    person_investment_funding_round_funded_organization_role_company.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['role_company'])
+                    person_investment_funding_round_funded_organization_role_investor.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['role_investor'])
+                    person_investment_funding_round_funded_organization_role_group.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['role_group'])
+                    person_investment_funding_round_funded_organization_role_school.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['role_school'])
+                    person_investment_funding_round_funded_organization_investor_type.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['investor_type'])
+                    person_investment_funding_round_funded_organization_founded_on.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['founded_on'])
+                    person_investment_funding_round_funded_organization_founded_on_trust_code.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['founded_on_trust_code'])
+                    person_investment_funding_round_funded_organization_is_closed.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['is_closed'])
+                    person_investment_funding_round_funded_organization_closed_on.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['closed_on'])
+                    person_investment_funding_round_funded_organization_closed_on_trust_code.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['closed_on_trust_code'])
+                    person_investment_funding_round_funded_organization_num_employees_min.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['num_employees_min'])
+                    person_investment_funding_round_funded_organization_num_employees_max.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['num_employees_max'])
+                    person_investment_funding_round_funded_organization_stock_exchange.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['stock_exchange'])
+                    person_investment_funding_round_funded_organization_stock_symbol.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['stock_symbol'])
+                    person_investment_funding_round_funded_organization_total_funding_usd.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['total_funding_usd'])
+                    person_investment_funding_round_funded_organization_number_of_investments.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['number_of_investments'])
+                    person_investment_funding_round_funded_organization_homepage_url.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['homepage_url'])
+                    person_investment_funding_round_funded_organization_contact_email.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['contact_email'])
+                    person_investment_funding_round_funded_organization_phone_number.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['phone_number'])
+                    person_investment_funding_round_funded_organization_rank.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['rank'])
+                    person_investment_funding_round_funded_organization_created_at.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['created_at'])
+                    person_investment_funding_round_funded_organization_updated_at.append(person_investments['relationships']['funding_round']['relationships']['funded_organization']['properties']['updated_at'])
+
+        #declaring all dataframes for person
+        Person = pd.DataFrame() # Basic details for all persons from persons url 
+        Person_Degrees = pd.DataFrame() # Degree details for each person from each person's url
+        Person_Jobs = pd.DataFrame() # Job details for each person from each person's url
+        Person_FoundedCompanies = pd.DataFrame() # Founded companies details for each person from each person's url
+        Person_Websites = pd.DataFrame() # Website details for each person from each person's url
+        Person_AdvisoryRoles = pd.DataFrame() # Advisory role details for each person from each person's url
+        Person_Investments = pd.DataFrame() # Investment details for each investment made by each person from each person's investment url
+
+
+        # Output data frame for persons
+        Person['person_type'] = person_type
+        Person['person_uuid'] = person_uuid
+        Person['person_permalink'] = person_permalink
+        Person['person_api_path'] = person_api_path
+        Person['person_web_path'] = person_web_path
+        Person['person_api_url'] = person_api_url
+        Person['person_first_name'] = person_first_name
+        Person['person_last_name'] = person_last_name
+        Person['person_gender'] = person_gender
+        Person['person_also_known_as'] = person_also_known_as
+        Person['person_bio'] = person_bio
+        Person['person_profile_image_url'] = person_profile_image_url
+        Person['person_role_investor'] = person_role_investor
+        Person['person_born_on'] = person_born_on
+        Person['person_born_on_trust_code'] = person_born_on_trust_code
+        Person['person_died_on'] = person_died_on
+        Person['person_died_on_trust_code'] = person_died_on_trust_code
+        Person['person_rank'] = person_rank
+        Person['person_created_at'] = person_created_at
+        Person['person_updated_at'] = person_updated_at
+        Person['person_primary_location_type'] = person_primary_location_type
+        Person['person_primary_location_uuid'] = person_primary_location_uuid
+        Person['person_primary_location_uuid'] = person_primary_location_uuid
+        Person['person_primary_location_location_type'] = person_primary_location_location_type
+        Person['person_primary_location_parent_location_uuid'] = person_primary_location_parent_location_uuid
+        Person['person_primary_location_city'] = person_primary_location_city
+        Person['person_primary_location_region'] = person_primary_location_region
+        Person['person_primary_location_region_code2'] = person_primary_location_region_code2
+        Person['person_primary_location_country'] = person_primary_location_country
+        Person['person_primary_location_country_code2'] = person_primary_location_country_code2
+        Person['person_primary_location_country_code3'] = person_primary_location_country_code3
+        Person['person_primary_location_continent'] = person_primary_location_continent
+        Person['person_primary_location_created_at'] = person_primary_location_created_at
+        Person['person_primary_location_updated_at'] = person_primary_location_updated_at
+        Person['person_primary_affiliation_type'] = person_primary_affiliation_type
+        Person['person_primary_affiliation_uuid'] = person_primary_affiliation_uuid
+        Person['person_primary_affiliation_title'] = person_primary_affiliation_title
+        Person['person_primary_affiliation_started_on'] = person_primary_affiliation_started_on
+        Person['person_primary_affiliation_started_on_trust_code'] = person_primary_affiliation_started_on_trust_code
+        Person['person_primary_affiliation_ended_on'] = person_primary_affiliation_ended_on
+        Person['person_primary_affiliation_ended_on_trust_code'] = person_primary_affiliation_ended_on_trust_code   
+        Person['person_primary_affiliation_is_current'] = person_primary_affiliation_is_current
+        Person['person_primary_affiliation_job_type'] = person_primary_affiliation_job_type
+        Person['person_primary_affiliation_created_at'] = person_primary_affiliation_created_at
+        Person['person_primary_affiliation_updated_at'] = person_primary_affiliation_updated_at
+        Person['person_primary_affiliation_organization_type'] = person_primary_affiliation_organization_type
+        Person['person_primary_affiliation_organization_uuid'] = person_primary_affiliation_organization_uuid
+        Person['person_primary_affiliation_organization_permalink'] = person_primary_affiliation_organization_permalink
+        Person['person_primary_affiliation_organization_permalink_aliases'] = person_primary_affiliation_organization_permalink_aliases
+        Person['person_primary_affiliation_organization_api_path'] = person_primary_affiliation_organization_api_path
+        Person['person_primary_affiliation_organization_web_path'] = person_primary_affiliation_organization_web_path
+        Person['person_primary_affiliation_organization_api_url'] = person_primary_affiliation_organization_api_url
+        Person['person_primary_affiliation_organization_name'] = person_primary_affiliation_organization_name
+        Person['person_primary_affiliation_organization_also_known_as'] = person_primary_affiliation_organization_also_known_as
+        Person['person_primary_affiliation_organization_short_description'] = person_primary_affiliation_organization_short_description
+        Person['person_primary_affiliation_organization_description'] = person_primary_affiliation_organization_description
+        Person['person_primary_affiliation_organization_profile_image_url'] = person_primary_affiliation_organization_profile_image_url
+        Person['person_primary_affiliation_organization_primary_role'] = person_primary_affiliation_organization_primary_role
+        Person['person_primary_affiliation_organization_role_company'] = person_primary_affiliation_organization_role_company
+        Person['person_primary_affiliation_organization_role_investor'] = person_primary_affiliation_organization_role_investor
+        Person['person_primary_affiliation_organization_role_group'] = person_primary_affiliation_organization_role_group
+        Person['person_primary_affiliation_organization_role_school'] = person_primary_affiliation_organization_role_school
+        Person['person_primary_affiliation_organization_investor_type'] = person_primary_affiliation_organization_investor_type
+        Person['person_primary_affiliation_organization_founded_on'] = person_primary_affiliation_organization_founded_on
+        Person['person_primary_affiliation_organization_founded_on_trust_code'] = person_primary_affiliation_organization_founded_on_trust_code
+        Person['person_primary_affiliation_organization_is_closed'] = person_primary_affiliation_organization_is_closed
+        Person['person_primary_affiliation_organization_closed_on'] = person_primary_affiliation_organization_closed_on
+        Person['person_primary_affiliation_organization_closed_on_trust_code'] = person_primary_affiliation_organization_closed_on_trust_code
+        Person['person_primary_affiliation_organization_num_employees_min'] = person_primary_affiliation_organization_num_employees_min
+        Person['person_primary_affiliation_organization_num_employees_max'] = person_primary_affiliation_organization_num_employees_max
+        Person['person_primary_affiliation_organization_stock_exchange'] = person_primary_affiliation_organization_stock_exchange
+        Person['person_primary_affiliation_organization_stock_symbol'] = person_primary_affiliation_organization_stock_symbol
+        Person['person_primary_affiliation_organization_total_funding_usd'] = person_primary_affiliation_organization_total_funding_usd
+        Person['person_primary_affiliation_organization_number_of_investments'] = person_primary_affiliation_organization_number_of_investments
+        Person['person_primary_affiliation_organization_homepage_url'] = person_primary_affiliation_organization_homepage_url
+        Person['person_primary_affiliation_organization_contact_email'] = person_primary_affiliation_organization_contact_email
+        Person['person_primary_affiliation_organization_phone_number'] = person_primary_affiliation_organization_phone_number
+        Person['person_primary_affiliation_organization_rank'] = person_primary_affiliation_organization_rank
+        Person['person_primary_affiliation_organization_created_at'] = person_primary_affiliation_organization_created_at
+        Person['person_primary_affiliation_organization_updated_at'] = person_primary_affiliation_organization_updated_at
+        Person['person_primary_image_type'] = person_primary_image_type
+        Person['person_primary_image_uuid'] = person_primary_image_uuid
+        Person['person_primary_image_asset_path'] = person_primary_image_asset_path
+        Person['person_primary_image_asset_url'] = person_primary_image_asset_url
+        Person['person_primary_image_content_type'] = person_primary_image_content_type
+        Person['person_primary_image_height'] = person_primary_image_height
+        Person['person_primary_image_width'] = person_primary_image_width
+        Person['person_primary_image_filesize'] = person_primary_image_filesize
+        Person['person_primary_image_created_at'] = person_primary_image_created_at
+        Person['person_primary_image_updated_at'] = person_primary_image_updated_at
+        Person['person_primary_location_type'] = person_primary_location_type
+        Person['person_primary_location_uuid'] = person_primary_location_uuid
+        Person['person_primary_location_uuid'] = person_primary_location_uuid
+        Person['person_primary_location_location_type'] = person_primary_location_location_type
+        Person['person_primary_location_parent_location_uuid'] = person_primary_location_parent_location_uuid
+        Person['person_primary_location_city'] = person_primary_location_city
+        Person['person_primary_location_region'] = person_primary_location_region
+        Person['person_primary_location_region_code2'] = person_primary_location_region_code2
+        Person['person_primary_location_country'] = person_primary_location_country
+        Person['person_primary_location_country_code2'] = person_primary_location_country_code2
+        Person['person_primary_location_country_code3'] = person_primary_location_country_code3
+        Person['person_primary_location_continent'] = person_primary_location_continent
+        Person['person_primary_location_created_at'] = person_primary_location_created_at
+        Person['person_primary_location_updated_at'] = person_primary_location_updated_at
+        Person['person_primary_affiliation_type'] = person_primary_affiliation_type
+        Person['person_primary_affiliation_uuid'] = person_primary_affiliation_uuid
+        Person['person_primary_affiliation_title'] = person_primary_affiliation_title
+        Person['person_primary_affiliation_started_on'] = person_primary_affiliation_started_on
+        Person['person_primary_affiliation_started_on_trust_code'] = person_primary_affiliation_started_on_trust_code
+        Person['person_primary_affiliation_ended_on'] = person_primary_affiliation_ended_on
+        Person['person_primary_affiliation_ended_on_trust_code'] = person_primary_affiliation_ended_on_trust_code   
+        Person['person_primary_affiliation_is_current'] = person_primary_affiliation_is_current
+        Person['person_primary_affiliation_job_type'] = person_primary_affiliation_job_type
+        Person['person_primary_affiliation_created_at'] = person_primary_affiliation_created_at
+        Person['person_primary_affiliation_updated_at'] = person_primary_affiliation_updated_at
+        Person['person_primary_affiliation_organization_type'] = person_primary_affiliation_organization_type
+        Person['person_primary_affiliation_organization_uuid'] = person_primary_affiliation_organization_uuid
+        Person['person_primary_affiliation_organization_permalink'] = person_primary_affiliation_organization_permalink
+        Person['person_primary_affiliation_organization_permalink_aliases'] = person_primary_affiliation_organization_permalink_aliases
+        Person['person_primary_affiliation_organization_api_path'] = person_primary_affiliation_organization_api_path
+        Person['person_primary_affiliation_organization_web_path'] = person_primary_affiliation_organization_web_path
+        Person['person_primary_affiliation_organization_api_url'] = person_primary_affiliation_organization_api_url
+        Person['person_primary_affiliation_organization_name'] = person_primary_affiliation_organization_name
+        Person['person_primary_affiliation_organization_also_known_as'] = person_primary_affiliation_organization_also_known_as
+        Person['person_primary_affiliation_organization_short_description'] = person_primary_affiliation_organization_short_description
+        Person['person_primary_affiliation_organization_description'] = person_primary_affiliation_organization_description
+        Person['person_primary_affiliation_organization_profile_image_url'] = person_primary_affiliation_organization_profile_image_url
+        Person['person_primary_affiliation_organization_primary_role'] = person_primary_affiliation_organization_primary_role
+        Person['person_primary_affiliation_organization_role_company'] = person_primary_affiliation_organization_role_company
+        Person['person_primary_affiliation_organization_role_investor'] = person_primary_affiliation_organization_role_investor
+        Person['person_primary_affiliation_organization_role_group'] = person_primary_affiliation_organization_role_group
+        Person['person_primary_affiliation_organization_role_school'] = person_primary_affiliation_organization_role_school
+        Person['person_primary_affiliation_organization_investor_type'] = person_primary_affiliation_organization_investor_type
+        Person['person_primary_affiliation_organization_founded_on'] = person_primary_affiliation_organization_founded_on
+        Person['person_primary_affiliation_organization_founded_on_trust_code'] = person_primary_affiliation_organization_founded_on_trust_code
+        Person['person_primary_affiliation_organization_is_closed'] = person_primary_affiliation_organization_is_closed
+        Person['person_primary_affiliation_organization_closed_on'] = person_primary_affiliation_organization_closed_on
+        Person['person_primary_affiliation_organization_closed_on_trust_code'] = person_primary_affiliation_organization_closed_on_trust_code
+        Person['person_primary_affiliation_organization_num_employees_min'] = person_primary_affiliation_organization_num_employees_min
+        Person['person_primary_affiliation_organization_num_employees_max'] = person_primary_affiliation_organization_num_employees_max
+        Person['person_primary_affiliation_organization_stock_exchange'] = person_primary_affiliation_organization_stock_exchange
+        Person['person_primary_affiliation_organization_stock_symbol'] = person_primary_affiliation_organization_stock_symbol
+        Person['person_primary_affiliation_organization_total_funding_usd'] = person_primary_affiliation_organization_total_funding_usd
+        Person['person_primary_affiliation_organization_number_of_investments'] = person_primary_affiliation_organization_number_of_investments
+        Person['person_primary_affiliation_organization_homepage_url'] = person_primary_affiliation_organization_homepage_url
+        Person['person_primary_affiliation_organization_contact_email'] = person_primary_affiliation_organization_contact_email
+        Person['person_primary_affiliation_organization_phone_number'] = person_primary_affiliation_organization_phone_number
+        Person['person_primary_affiliation_organization_rank'] = person_primary_affiliation_organization_rank
+        Person['person_primary_affiliation_organization_created_at'] = person_primary_affiliation_organization_created_at
+        Person['person_primary_affiliation_organization_updated_at'] = person_primary_affiliation_organization_updated_at
+        Person['person_primary_image_type'] = person_primary_image_type
+        Person['person_primary_image_uuid'] = person_primary_image_uuid
+        Person['person_primary_image_asset_path'] = person_primary_image_asset_path
+        Person['person_primary_image_asset_url'] = person_primary_image_asset_url
+        Person['person_primary_image_content_type'] = person_primary_image_content_type
+        Person['person_primary_image_height'] = person_primary_image_height
+        Person['person_primary_image_width'] = person_primary_image_width
+        Person['person_primary_image_filesize'] = person_primary_image_filesize
+        Person['person_primary_image_created_at'] = person_primary_image_created_at
+        Person['person_primary_image_updated_at'] = person_primary_image_updated_at
+        
+        # Output data frame for Companypersons_Degrees
+        Person_Degrees['person_uuid'] = person_uuid_person_degree
+        Person_Degrees['person_first_name'] = person_first_name_person_degree
+        Person_Degrees['person_last_name'] = person_last_name_person_degree
+        Person_Degrees['person_degree_type'] = person_degree_type
+        Person_Degrees['person_degree_uuid'] = person_degree_uuid
+        Person_Degrees['person_degree_started_on'] = person_degree_started_on
+        Person_Degrees['person_degree_started_on_trust_code'] = person_degree_started_on_trust_code
+        Person_Degrees['person_degree_completed_on'] = person_degree_completed_on
+        Person_Degrees['person_degree_completed_on_trust_code'] = person_degree_completed_on_trust_code
+        Person_Degrees['person_degree_type_name'] = person_degree_type_name
+        Person_Degrees['person_degree_subject'] = person_degree_subject
+        Person_Degrees['person_degree_created_at'] = person_degree_created_at
+        Person_Degrees['person_degree_updated_at'] = person_degree_updated_at
+        Person_Degrees['person_degree_school_type'] = person_degree_school_type
+        Person_Degrees['person_degree_school_uuid'] = person_degree_school_uuid
+        Person_Degrees['person_degree_school_permalink'] = person_degree_school_permalink
+        Person_Degrees['person_degree_school_permalink_aliases'] = person_degree_school_permalink_aliases
+        Person_Degrees['person_degree_school_api_path'] = person_degree_school_api_path
+        Person_Degrees['person_degree_school_web_path'] = person_degree_school_web_path
+        Person_Degrees['person_degree_school_api_url'] = person_degree_school_api_url
+        Person_Degrees['person_degree_school_name'] = person_degree_school_name
+        Person_Degrees['person_degree_school_also_known_as'] = person_degree_school_also_known_as
+        Person_Degrees['person_degree_school_short_description'] = person_degree_school_short_description
+        Person_Degrees['person_degree_school_description'] = person_degree_school_description
+        Person_Degrees['person_degree_school_profile_image_url'] = person_degree_school_profile_image_url
+        Person_Degrees['person_degree_school_primary_role'] = person_degree_school_primary_role
+        Person_Degrees['person_degree_school_role_company'] = person_degree_school_role_company
+        Person_Degrees['person_degree_school_role_investor'] = person_degree_school_role_investor
+        Person_Degrees['person_degree_school_role_group'] = person_degree_school_role_group
+        Person_Degrees['person_degree_school_role_school'] = person_degree_school_role_school
+        Person_Degrees['person_degree_school_investor_type'] = person_degree_school_investor_type
+        Person_Degrees['person_degree_school_founded_on'] = person_degree_school_founded_on
+        Person_Degrees['person_degree_school_founded_on_trust_code'] = person_degree_school_founded_on_trust_code
+        Person_Degrees['person_degree_school_is_closed'] = person_degree_school_is_closed
+        Person_Degrees['person_degree_school_closed_on'] = person_degree_school_closed_on
+        Person_Degrees['person_degree_school_closed_on_trust_code'] = person_degree_school_closed_on_trust_code
+        Person_Degrees['person_degree_school_num_employees_min'] = person_degree_school_num_employees_min
+        Person_Degrees['person_degree_school_num_employees_max'] = person_degree_school_num_employees_max
+        Person_Degrees['person_degree_school_stock_exchange'] = person_degree_school_stock_exchange
+        Person_Degrees['person_degree_school_stock_symbol'] = person_degree_school_stock_symbol
+        Person_Degrees['person_degree_school_total_funding_usd'] = person_degree_school_total_funding_usd
+        Person_Degrees['person_degree_school_number_of_investments'] = person_degree_school_number_of_investments
+        Person_Degrees['person_degree_school_homepage_url'] = person_degree_school_homepage_url
+        Person_Degrees['person_degree_school_contact_email'] = person_degree_school_contact_email
+        Person_Degrees['person_degree_school_phone_number'] = person_degree_school_phone_number
+        Person_Degrees['person_degree_school_rank'] = person_degree_school_rank
+        Person_Degrees['person_degree_school_created_at'] = person_degree_school_created_at
+        Person_Degrees['person_degree_school_updated_at'] = person_degree_school_updated_at
+        
+        # Output data frame for Companypersons_Jobs
+        Person_Jobs['person_uuid'] = person_uuid_person_job
+        Person_Jobs['person_first_name'] = person_first_name_person_job
+        Person_Jobs['person_last_name'] = person_last_name_person_job
+        Person_Jobs['person_job_type'] = person_job_type
+        Person_Jobs['person_job_uuid'] = person_job_uuid
+        Person_Jobs['person_job_title'] = person_job_title
+        Person_Jobs['person_job_started_on'] = person_job_started_on
+        Person_Jobs['person_job_started_on_trust_code'] = person_job_started_on_trust_code
+        Person_Jobs['person_job_ended_on'] = person_job_ended_on
+        Person_Jobs['person_job_ended_on_trust_code'] = person_job_ended_on_trust_code
+        Person_Jobs['person_job_is_current'] = person_job_is_current
+        Person_Jobs['person_job_job_type'] = person_job_job_type
+        Person_Jobs['person_job_created_at'] = person_job_created_at
+        Person_Jobs['person_job_updated_at'] = person_job_updated_at
+        Person_Jobs['person_job_organization_type'] = person_job_organization_type
+        Person_Jobs['person_job_organization_uuid'] = person_job_organization_uuid
+        Person_Jobs['person_job_organization_permalink'] = person_job_organization_permalink
+        Person_Jobs['person_job_organization_permalink_aliases'] = person_job_organization_permalink_aliases
+        Person_Jobs['person_job_organization_api_path'] = person_job_organization_api_path
+        Person_Jobs['person_job_organization_web_path'] = person_job_organization_web_path
+        Person_Jobs['person_job_organization_api_url'] = person_job_organization_api_url
+        Person_Jobs['person_job_organization_name'] = person_job_organization_name
+        Person_Jobs['person_job_organization_also_known_as'] = person_job_organization_also_known_as
+        Person_Jobs['person_job_organization_short_description'] = person_job_organization_short_description
+        Person_Jobs['person_job_organization_description'] = person_job_organization_description
+        Person_Jobs['person_job_organization_profile_image_url'] = person_job_organization_profile_image_url
+        Person_Jobs['person_job_organization_primary_role'] = person_job_organization_primary_role
+        Person_Jobs['person_job_organization_role_company'] = person_job_organization_role_company
+        Person_Jobs['person_job_organization_role_investor'] = person_job_organization_role_investor
+        Person_Jobs['person_job_organization_role_group'] = person_job_organization_role_group
+        Person_Jobs['person_job_organization_role_school'] = person_job_organization_role_school
+        Person_Jobs['person_job_organization_investor_type'] = person_job_organization_investor_type
+        Person_Jobs['person_job_organization_founded_on'] = person_job_organization_founded_on
+        Person_Jobs['person_job_organization_founded_on_trust_code'] = person_job_organization_founded_on_trust_code
+        Person_Jobs['person_job_organization_is_closed'] = person_job_organization_is_closed
+        Person_Jobs['person_job_organization_closed_on'] = person_job_organization_closed_on
+        Person_Jobs['person_job_organization_closed_on_trust_code'] = person_job_organization_closed_on_trust_code
+        Person_Jobs['person_job_organization_num_employees_min'] = person_job_organization_num_employees_min
+        Person_Jobs['person_job_organization_num_employees_max'] = person_job_organization_num_employees_max
+        Person_Jobs['person_job_organization_stock_exchange'] = person_job_organization_stock_exchange
+        Person_Jobs['person_job_organization_stock_symbol'] = person_job_organization_stock_symbol
+        Person_Jobs['person_job_organization_total_funding_usd'] = person_job_organization_total_funding_usd
+        Person_Jobs['person_job_organization_number_of_investments'] = person_job_organization_number_of_investments
+        Person_Jobs['person_job_organization_homepage_url'] = person_job_organization_homepage_url
+        Person_Jobs['person_job_organization_contact_email'] = person_job_organization_contact_email
+        Person_Jobs['person_job_organization_phone_number'] = person_job_organization_phone_number
+        Person_Jobs['person_job_organization_rank'] = person_job_organization_rank
+        Person_Jobs['person_job_organization_created_at'] = person_job_organization_created_at
+        Person_Jobs['person_job_organization_updated_at'] = person_job_organization_updated_at
+        
+        # Output data frame for Companypersons_FoundedCompanies
+        Person_FoundedCompanies['person_uuid'] = person_uuid_person_founded_company
+        Person_FoundedCompanies['person_first_name'] = person_first_name_person_founded_company
+        Person_FoundedCompanies['person_last_name'] = person_last_name_person_founded_company
+        Person_FoundedCompanies['person_founded_company_type'] = person_founded_company_type
+        Person_FoundedCompanies['person_founded_company_uuid'] = person_founded_company_uuid
+        Person_FoundedCompanies['person_founded_company_permalink'] = person_founded_company_permalink
+        Person_FoundedCompanies['person_founded_company_permalink_aliases'] = person_founded_company_permalink_aliases
+        Person_FoundedCompanies['person_founded_company_api_path'] = person_founded_company_api_path
+        Person_FoundedCompanies['person_founded_company_web_path'] = person_founded_company_web_path
+        Person_FoundedCompanies['person_founded_company_api_url'] = person_founded_company_api_url
+        Person_FoundedCompanies['person_founded_company_name'] = person_founded_company_name
+        Person_FoundedCompanies['person_founded_company_also_known_as'] = person_founded_company_also_known_as
+        Person_FoundedCompanies['person_founded_company_short_description'] = person_founded_company_short_description
+        Person_FoundedCompanies['person_founded_company_description'] = person_founded_company_description
+        Person_FoundedCompanies['person_founded_company_profile_image_url'] = person_founded_company_profile_image_url
+        Person_FoundedCompanies['person_founded_company_primary_role'] = person_founded_company_primary_role
+        Person_FoundedCompanies['person_founded_company_role_company'] = person_founded_company_role_company
+        Person_FoundedCompanies['person_founded_company_role_investor'] = person_founded_company_role_investor
+        Person_FoundedCompanies['person_founded_company_role_group'] = person_founded_company_role_group
+        Person_FoundedCompanies['person_founded_company_role_school'] = person_founded_company_role_school
+        Person_FoundedCompanies['person_founded_company_investor_type'] = person_founded_company_investor_type
+        Person_FoundedCompanies['person_founded_company_founded_on'] = person_founded_company_founded_on
+        Person_FoundedCompanies['person_founded_company_founded_on_trust_code'] = person_founded_company_founded_on_trust_code
+        Person_FoundedCompanies['person_founded_company_is_closed'] = person_founded_company_is_closed
+        Person_FoundedCompanies['person_founded_company_closed_on'] = person_founded_company_closed_on
+        Person_FoundedCompanies['person_founded_company_closed_on_trust_code'] = person_founded_company_closed_on_trust_code
+        Person_FoundedCompanies['person_founded_company_num_employees_min'] = person_founded_company_num_employees_min
+        Person_FoundedCompanies['person_founded_company_num_employees_max'] = person_founded_company_num_employees_max
+        Person_FoundedCompanies['person_founded_company_stock_exchange'] = person_founded_company_stock_exchange
+        Person_FoundedCompanies['person_founded_company_stock_symbol'] = person_founded_company_stock_symbol
+        Person_FoundedCompanies['person_founded_company_total_funding_usd'] = person_founded_company_total_funding_usd
+        Person_FoundedCompanies['person_founded_company_number_of_investments'] = person_founded_company_number_of_investments
+        Person_FoundedCompanies['person_founded_company_homepage_url'] = person_founded_company_homepage_url
+        Person_FoundedCompanies['person_founded_company_contact_email'] = person_founded_company_contact_email
+        Person_FoundedCompanies['person_founded_company_phone_number'] = person_founded_company_phone_number
+        Person_FoundedCompanies['person_founded_company_rank'] = person_founded_company_rank
+        Person_FoundedCompanies['person_founded_company_created_at'] = person_founded_company_created_at
+        Person_FoundedCompanies['person_founded_company_updated_at'] = person_founded_company_updated_at   
+        
+        # Output data frame for Companypersons_Websites
+        Person_Websites['person_uuid'] = person_uuid_person_website
+        Person_Websites['person_first_name'] =  person_first_name_person_website
+        Person_Websites['person_last_name'] = person_last_name_person_website
+        Person_Websites['person_website_type'] = person_website_type
+        Person_Websites['person_website_uuid'] = person_website_uuid
+        Person_Websites['person_website_website_type'] = person_website_website_type
+        Person_Websites['person_website_website_name'] = person_website_website_name
+        Person_Websites['person_website_url'] = person_website_url
+        Person_Websites['person_website_created_at'] = person_website_created_at
+        Person_Websites['person_website_updated_at'] = person_website_updated_at
+        
+        Person_AdvisoryRoles['person_uuid'] = person_uuid_person_advisory_role
+        Person_AdvisoryRoles['person_first_name'] = person_first_name_person_advisory_role
+        Person_AdvisoryRoles['person_last_name'] = person_last_name_person_advisory_role
+        Person_AdvisoryRoles['person_advisory_role_type'] = person_advisory_role_type
+        Person_AdvisoryRoles['person_advisory_role_uuid'] = person_advisory_role_uuid
+        Person_AdvisoryRoles['person_advisory_role_title'] = person_advisory_role_title
+        Person_AdvisoryRoles['person_advisory_role_started_on'] = person_advisory_role_started_on
+        Person_AdvisoryRoles['person_advisory_role_started_on_trust_code'] = person_advisory_role_started_on_trust_code
+        Person_AdvisoryRoles['person_advisory_role_ended_on'] = person_advisory_role_ended_on
+        Person_AdvisoryRoles['person_advisory_role_ended_on_trust_code'] = person_advisory_role_ended_on_trust_code
+        Person_AdvisoryRoles['person_advisory_role_is_current'] = person_advisory_role_is_current
+        Person_AdvisoryRoles['person_advisory_role_job_type'] = person_advisory_role_job_type
+        Person_AdvisoryRoles['person_advisory_role_created_at'] = person_advisory_role_created_at
+        Person_AdvisoryRoles['person_advisory_role_updated_at'] = person_advisory_role_updated_at
+        Person_AdvisoryRoles['person_advisory_role_organization_permalink'] = person_advisory_role_organization_permalink
+        Person_AdvisoryRoles['person_advisory_role_organization_permalink_aliases'] = person_advisory_role_organization_permalink_aliases
+        Person_AdvisoryRoles['person_advisory_role_organization_api_path'] = person_advisory_role_organization_api_path
+        Person_AdvisoryRoles['person_advisory_role_organization_web_path'] = person_advisory_role_organization_web_path
+        Person_AdvisoryRoles['person_advisory_role_organization_api_url'] = person_advisory_role_organization_api_url
+        Person_AdvisoryRoles['person_advisory_role_organization_name'] = person_advisory_role_organization_name
+        Person_AdvisoryRoles['person_advisory_role_organization_also_known_as'] = person_advisory_role_organization_also_known_as
+        Person_AdvisoryRoles['person_advisory_role_organization_short_description'] = person_advisory_role_organization_short_description
+        Person_AdvisoryRoles['person_advisory_role_organization_description'] = person_advisory_role_organization_description
+        Person_AdvisoryRoles['person_advisory_role_organization_profile_image_url'] = person_advisory_role_organization_profile_image_url
+        Person_AdvisoryRoles['person_advisory_role_organization_primary_role'] = person_advisory_role_organization_primary_role
+        Person_AdvisoryRoles['person_advisory_role_organization_role_company'] = person_advisory_role_organization_role_company
+        Person_AdvisoryRoles['person_advisory_role_organization_role_investor'] = person_advisory_role_organization_role_investor
+        Person_AdvisoryRoles['person_advisory_role_organization_role_group'] = person_advisory_role_organization_role_group
+        Person_AdvisoryRoles['person_advisory_role_organization_role_school'] = person_advisory_role_organization_role_school
+        Person_AdvisoryRoles['person_advisory_role_organization_investor_type'] = person_advisory_role_organization_investor_type
+        Person_AdvisoryRoles['person_advisory_role_organization_founded_on'] = person_advisory_role_organization_founded_on
+        Person_AdvisoryRoles['person_advisory_role_organization_founded_on_trust_code'] = person_advisory_role_organization_founded_on_trust_code
+        Person_AdvisoryRoles['person_advisory_role_organization_is_closed'] = person_advisory_role_organization_is_closed
+        Person_AdvisoryRoles['person_advisory_role_organization_closed_on'] = person_advisory_role_organization_closed_on
+        Person_AdvisoryRoles['person_advisory_role_organization_closed_on_trust_code'] = person_advisory_role_organization_closed_on_trust_code
+        Person_AdvisoryRoles['person_advisory_role_organization_num_employees_min'] = person_advisory_role_organization_num_employees_min
+        Person_AdvisoryRoles['person_advisory_role_organization_num_employees_max'] = person_advisory_role_organization_num_employees_max
+        Person_AdvisoryRoles['person_advisory_role_organization_stock_exchange'] = person_advisory_role_organization_stock_exchange
+        Person_AdvisoryRoles['person_advisory_role_organization_stock_symbol'] = person_advisory_role_organization_stock_symbol
+        Person_AdvisoryRoles['person_advisory_role_organization_total_funding_usd'] = person_advisory_role_organization_total_funding_usd
+        Person_AdvisoryRoles['person_advisory_role_organization_number_of_investments'] = person_advisory_role_organization_number_of_investments
+        Person_AdvisoryRoles['person_advisory_role_organization_homepage_url'] = person_advisory_role_organization_homepage_url
+        Person_AdvisoryRoles['person_advisory_role_organization_contact_email'] = person_advisory_role_organization_contact_email
+        Person_AdvisoryRoles['person_advisory_role_organization_phone_number'] = person_advisory_role_organization_phone_number
+        Person_AdvisoryRoles['person_advisory_role_organization_rank'] = person_advisory_role_organization_rank
+        Person_AdvisoryRoles['person_advisory_role_organization_created_at'] = person_advisory_role_organization_created_at
+        Person_AdvisoryRoles['person_advisory_role_organization_updated_at'] = person_advisory_role_organization_updated_at
+        
+        Person_Investments['person_uuid'] = person_uuid_person_investments
+        Person_Investments['person_first_name'] = person_first_name_investments
+        Person_Investments['person_last_name'] = person_last_name_person_investments
+        Person_Investments['person_investment_type'] = person_investment_type
+        Person_Investments['person_investment_uuid'] = person_investment_uuid
+        Person_Investments['person_investment_money_invested'] = person_investment_money_invested
+        Person_Investments['person_investment_money_invested_currency_code'] = person_investment_money_invested_currency_code
+        Person_Investments['person_investment_money_invested_usd'] = person_investment_money_invested_usd
+        Person_Investments['person_investment_is_lead_investor'] = person_investment_is_lead_investor
+        Person_Investments['person_investment_announced_on'] = person_investment_announced_on
+        Person_Investments['person_investment_announced_on_trust_code'] = person_investment_announced_on_trust_code
+        Person_Investments['person_investment_created_at'] = person_investment_created_at
+        Person_Investments['person_investment_updated_at'] = person_investment_updated_at
+        Person_Investments['person_investment_funding_round_type'] = person_investment_funding_round_type
+        Person_Investments['person_investment_funding_round_uuid'] = person_investment_funding_round_uuid
+        Person_Investments['person_investment_funding_round_permalink'] = person_investment_funding_round_permalink
+        Person_Investments['person_investment_funding_round_api_path'] = person_investment_funding_round_api_path
+        Person_Investments['person_investment_funding_round_web_path'] = person_investment_funding_round_web_path
+        Person_Investments['person_investment_funding_round_api_url'] = person_investment_funding_round_api_url
+        Person_Investments['person_investment_funding_round_funding_type'] = person_investment_funding_round_funding_type
+        Person_Investments['person_investment_funding_round_series'] = person_investment_funding_round_series
+        Person_Investments['person_investment_funding_round_series_qualifier'] = person_investment_funding_round_series_qualifier
+        Person_Investments['person_investment_funding_round_announced_on'] = person_investment_funding_round_announced_on
+        Person_Investments['person_investment_funding_round_announced_on_trust_code'] = person_investment_funding_round_announced_on_trust_code
+        Person_Investments['person_investment_funding_round_closed_on'] = person_investment_funding_round_closed_on
+        Person_Investments['person_investment_funding_round_closed_on_trust_code'] = person_investment_funding_round_closed_on_trust_code
+        Person_Investments['person_investment_funding_money_raised'] = person_investment_funding_money_raised
+        Person_Investments['person_investment_funding_round_money_raised_currency_code'] = person_investment_funding_round_money_raised_currency_code
+        Person_Investments['person_investment_funding_round_money_raised_usd'] = person_investment_funding_round_money_raised_usd
+        Person_Investments['person_investment_funding_round_target_money_raised'] = person_investment_funding_round_target_money_raised
+        Person_Investments['person_investment_funding_round_target_money_raised_currency_code'] = person_investment_funding_round_target_money_raised_currency_code
+        Person_Investments['person_investment_funding_round_target_money_raised_usd'] = person_investment_funding_round_target_money_raised_usd
+        Person_Investments['person_investment_funding_round_pre_money_valuation'] = person_investment_funding_round_pre_money_valuation
+        Person_Investments['person_investment_funding_round_pre_money_valuation_currency_code'] = person_investment_funding_round_pre_money_valuation_currency_code
+        Person_Investments['person_investment_funding_round_pre_money_valuation_usd'] = person_investment_funding_round_pre_money_valuation_usd
+        Person_Investments['person_investment_funding_round_rank'] = person_investment_funding_round_rank
+        Person_Investments['person_investment_funding_round_created_at'] = person_investment_funding_round_created_at
+        Person_Investments['person_investment_funding_round_updated_at'] = person_investment_funding_round_updated_at
+        Person_Investments['person_investment_funding_round_funded_organization_type'] = person_investment_funding_round_funded_organization_type
+        Person_Investments['person_investment_funding_round_funded_organization_uuid'] = person_investment_funding_round_funded_organization_uuid
+        Person_Investments['person_investment_funding_round_funded_organization_permalink'] = person_investment_funding_round_funded_organization_permalink
+        Person_Investments['person_investment_funding_round_funded_organization_permalink_aliases'] = person_investment_funding_round_funded_organization_permalink_aliases
+        Person_Investments['person_investment_funding_round_funded_organization_api_path'] = person_investment_funding_round_funded_organization_api_path
+        Person_Investments['person_investment_funding_round_funded_organization_web_path'] = person_investment_funding_round_funded_organization_web_path
+        Person_Investments['person_investment_funding_round_funded_organization_api_url'] = person_investment_funding_round_funded_organization_api_url
+        Person_Investments['person_investment_funding_round_funded_organization_name'] = person_investment_funding_round_funded_organization_name
+        Person_Investments['person_investment_funding_round_funded_organization_also_known_as'] = person_investment_funding_round_funded_organization_also_known_as
+        Person_Investments['person_investment_funding_round_funded_organization_short_description'] = person_investment_funding_round_funded_organization_short_description
+        Person_Investments['person_investment_funding_round_funded_organization_description'] = person_investment_funding_round_funded_organization_description
+        Person_Investments['person_investment_funding_round_funded_organization_profile_image_url'] = person_investment_funding_round_funded_organization_profile_image_url
+        Person_Investments['person_investment_funding_round_funded_organization_primary_role'] = person_investment_funding_round_funded_organization_primary_role
+        Person_Investments['person_investment_funding_round_funded_organization_role_company'] = person_investment_funding_round_funded_organization_role_company
+        Person_Investments['person_investment_funding_round_funded_organization_role_investor'] = person_investment_funding_round_funded_organization_role_investor
+        Person_Investments['person_investment_funding_round_funded_organization_role_group'] = person_investment_funding_round_funded_organization_role_group
+        Person_Investments['person_investment_funding_round_funded_organization_role_school'] = person_investment_funding_round_funded_organization_role_school
+        Person_Investments['person_investment_funding_round_funded_organization_investor_type'] = person_investment_funding_round_funded_organization_investor_type
+        Person_Investments['person_investment_funding_round_funded_organization_founded_on'] = person_investment_funding_round_funded_organization_founded_on
+        Person_Investments['person_investment_funding_round_funded_organization_founded_on_trust_code'] = person_investment_funding_round_funded_organization_founded_on_trust_code
+        Person_Investments['person_investment_funding_round_funded_organization_is_closed'] = person_investment_funding_round_funded_organization_is_closed
+        Person_Investments['person_investment_funding_round_funded_organization_closed_on'] = person_investment_funding_round_funded_organization_closed_on
+        Person_Investments['person_investment_funding_round_funded_organization_closed_on_trust_code'] = person_investment_funding_round_funded_organization_closed_on_trust_code
+        Person_Investments['person_investment_funding_round_funded_organization_num_employees_min'] = person_investment_funding_round_funded_organization_num_employees_min
+        Person_Investments['person_investment_funding_round_funded_organization_num_employees_max'] = person_investment_funding_round_funded_organization_num_employees_max
+        Person_Investments['person_investment_funding_round_funded_organization_stock_exchange'] = person_investment_funding_round_funded_organization_stock_exchange
+        Person_Investments['person_investment_funding_round_funded_organization_stock_symbol'] = person_investment_funding_round_funded_organization_stock_symbol
+        Person_Investments['person_investment_funding_round_funded_organization_total_funding_usd'] = person_investment_funding_round_funded_organization_total_funding_usd
+        Person_Investments['person_investment_funding_round_funded_organization_number_of_investments'] = person_investment_funding_round_funded_organization_number_of_investments
+        Person_Investments['person_investment_funding_round_funded_organization_homepage_url'] = person_investment_funding_round_funded_organization_homepage_url
+        Person_Investments['person_investment_funding_round_funded_organization_contact_email'] = person_investment_funding_round_funded_organization_contact_email
+        Person_Investments['person_investment_funding_round_funded_organization_phone_number'] = person_investment_funding_round_funded_organization_phone_number
+        Person_Investments['person_investment_funding_round_funded_organization_rank'] = person_investment_funding_round_funded_organization_rank
+        Person_Investments['person_investment_funding_round_funded_organization_created_at'] = person_investment_funding_round_funded_organization_created_at
+        Person_Investments['person_investment_funding_round_funded_organization_updated_at'] = person_investment_funding_round_funded_organization_updated_at
+
+        #writing all dataframes to csv
+        Person.to_csv(r'Person_'+ folder_location_name +'.csv')
+        Person_Degrees.to_csv(r'Person_Degrees_'+ folder_location_name +'.csv')
+        Person_Jobs.to_csv(r'Person_Jobs_'+ folder_location_name +'.csv')
+        Person_FoundedCompanies.to_csv(r'Person_FoundedCompanies_'+ folder_location_name +'.csv')
+        Person_Websites.to_csv(r'Person_Websites_'+ folder_location_name +'.csv')
+        Person_AdvisoryRoles.to_csv(r'Person_AdvisoryRoles_'+ folder_location_name +'.csv')
+        Person_Investments.to_csv(r'Person_Investments_'+ folder_location_name +'.csv')
+    except:
+     
+        Error=pd.DataFrame()
+        person_url_error.append(person_permalink)
+        Error['company_url']=person_url_error
+        Error.to_csv(r'Error_'+ folder_location_name +'.csv')
+        print(person_permalink)
+        print('\n')
+        time.sleep(180)
+        continue

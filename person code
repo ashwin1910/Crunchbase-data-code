@@ -297,7 +297,7 @@ person_uuid_person_advisory_role = []
 person_first_name_person_advisory_role = []
 person_last_name_person_advisory_role = []
 person_advisory_role_type = []
-person_advisory_role_uuid = []
+person_advisory_role_organization_uuid = []
 person_advisory_role_title = []
 person_advisory_role_started_on = []
 person_advisory_role_started_on_trust_code = []
@@ -787,7 +787,7 @@ for person_permalink in person_permalink_list:
                 person_first_name_person_advisory_role.append(person_properties_details['properties']['first_name'])
                 person_last_name_person_advisory_role.append(person_properties_details['properties']['last_name'])
                 person_advisory_role_type.append(person_advisory_roles['type'])
-                person_advisory_role_uuid.append(person_advisory_roles['uuid'])
+                person_advisory_role_organization_uuid.append(person_advisory_roles['relationships']['organization']['uuid'])
                 person_advisory_role_title.append(person_advisory_roles['properties']['title'])
                 person_advisory_role_started_on.append(person_advisory_roles['properties']['started_on'])
                 person_advisory_role_started_on_trust_code.append(person_advisory_roles['properties']['started_on_trust_code'])
@@ -836,7 +836,7 @@ for person_permalink in person_permalink_list:
             person_first_name_person_advisory_role.append(person_properties_details['properties']['first_name'])
             person_last_name_person_advisory_role.append(person_properties_details['properties']['last_name'])
             person_advisory_role_type.append('')
-            person_advisory_role_uuid.append('')
+            person_advisory_role_organization_uuid.append('')
             person_advisory_role_title.append('')
             person_advisory_role_started_on.append('')
             person_advisory_role_started_on_trust_code.append('')
@@ -1302,7 +1302,7 @@ for person_permalink in person_permalink_list:
         Person_AdvisoryRoles['person_first_name'] = person_first_name_person_advisory_role
         Person_AdvisoryRoles['person_last_name'] = person_last_name_person_advisory_role
         Person_AdvisoryRoles['person_advisory_role_type'] = person_advisory_role_type
-        Person_AdvisoryRoles['person_advisory_role_uuid'] = person_advisory_role_uuid
+        Person_AdvisoryRoles['person_advisory_role_organization_uuid'] = person_advisory_role_organization_uuid
         Person_AdvisoryRoles['person_advisory_role_title'] = person_advisory_role_title
         Person_AdvisoryRoles['person_advisory_role_started_on'] = person_advisory_role_started_on
         Person_AdvisoryRoles['person_advisory_role_started_on_trust_code'] = person_advisory_role_started_on_trust_code

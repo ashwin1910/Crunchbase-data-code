@@ -132,8 +132,12 @@ for folder in range(number_of_folders):
 
 folder_location_name = str(str(start_index_array[0])+' to '+str(end_index_array[-1]))
 
+#making consolidation folder
+name= str(str(start_index_array[0])+' to '+str(end_index_array[-1]))
+os.makedirs(name)
+
 #changing directory to folder where consolidated files has to be created   
-os.chdir(working_directory  + '/Consolidation') #folder for consolidated files
+os.chdir(working_directory + name) #folder for consolidated files
 
 #creating consolidated file
 Investors_details= Investors_details.drop(Investors_details.columns[[0]],axis=1).drop_duplicates()

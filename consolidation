@@ -8,14 +8,14 @@ import time
 # this code can be used to consolidate csv files present in one folder
 
 start_index = 5000 #mention start index for first folder
-interval = 999 #specify interval between start and end index (for eg. 2000-2499; interval is 499)
+interval = 499 #specify interval between start and end index (for eg. 2000-2499; interval is 499)
 initial_index=start_index
 
 end_index= start_index+interval 
 
-number_of_folders = 3 #total number of folders to be consolidated
+number_of_folders = 7 #total number of folders to be consolidated
 
-working_directory= str('D:/OneDrive - Indian School of Business/FF Network/Data/Input/CB Raw Files')
+working_directory= str('C:/crunchbase_testing/test_consolidation_run')
 os.chdir(working_directory) # Change to working directory
 
 #declaring dataframe for consolidated dataframe
@@ -79,9 +79,9 @@ for folder in range(number_of_folders):
     os.chdir(working_directory  + '/' + folder_location_name)
     #concatenating dataframes 
     Investors_details=pd.concat([Investors_details,pd.read_csv('Investors_details.csv')],ignore_index=True)
-    Company_funds_details=pd.concat([Company_funds_details,pd.read_csv('Company_funds_'+ folder_location_name +'.csv')],ignore_index=True)
-    Company_investments_details=pd.concat([Company_investments_details,pd.read_csv('Company_investments_'+ folder_location_name +'.csv')],ignore_index=True)
-    Company_investments_rounds_Investors_details=pd.concat([Company_investments_rounds_Investors_details,pd.read_csv('Company_investments_rounds_Investors_'+ folder_location_name +'.csv')],ignore_index=True)
+    Company_funds_details=pd.concat([Company_funds_details,pd.read_csv('Company_Funds_'+ folder_location_name +'.csv')],ignore_index=True)
+    Company_investments_details=pd.concat([Company_investments_details,pd.read_csv('Company_Investments_'+ folder_location_name +'.csv')],ignore_index=True)
+    Company_investments_rounds_Investors_details=pd.concat([Company_investments_rounds_Investors_details,pd.read_csv('Company_Investment_rounds_Investors_'+ folder_location_name +'.csv')],ignore_index=True)
     Company_Details_=pd.concat([Company_Details_,pd.read_csv('Company_Details_'+ folder_location_name +'.csv')],ignore_index=True)
     Company_FundingRounds_=pd.concat([Company_FundingRounds_,pd.read_csv('Company_FundingRounds_'+ folder_location_name +'.csv')],ignore_index=True)
     Company_FundingRounds_Investors_=pd.concat([Company_FundingRounds_Investors_,pd.read_csv('Company_FundingRounds_Investors_'+ folder_location_name +'.csv')],ignore_index=True)
@@ -138,22 +138,23 @@ for folder in range(number_of_folders):
 
 
 folder_location_name = str(str(initial_index)+' to '+str(end_index))
+os.chdir(working_directory) # Change to working directory
 #making consolidation directory
 name= str(str(initial_index)+' to '+str(end_index))
 os.makedirs(name)
 
 #changing directory to folder where consolidated files has to be created   
-os.chdir(working_directory  + name) #folder for consolidated files
+os.chdir(working_directory +'/'+ name) #folder for consolidated files
 
 #creating consolidated file
 Investors_details= Investors_details.drop(Investors_details.columns[[0]],axis=1).drop_duplicates()
 Investors_details.to_csv('Investors.csv',index=False)
 Company_funds_details=Company_funds_details.drop(Company_funds_details.columns[[0]],axis=1).drop_duplicates()
-Company_funds_details.to_csv('Company_funds_'+ folder_location_name +'.csv',index=False)
+Company_funds_details.to_csv('Company_Funds_'+ folder_location_name +'.csv',index=False)
 Company_investments_rounds_Investors_details=Company_investments_rounds_Investors_details.drop(Company_investments_rounds_Investors_details.columns[[0]],axis=1).drop_duplicates()
-Company_investments_rounds_Investors_details.to_csv('Company_investments_rounds_Investors_'+ folder_location_name +'.csv',index=False)
+Company_investments_rounds_Investors_details.to_csv('Company_Investment_rounds_Investors_'+ folder_location_name +'.csv',index=False)
 Company_investments_details=Company_investments_details.drop(Company_investments_details.columns[[0]],axis=1).drop_duplicates()
-Company_investments_details.to_csv('Company_investments_'+ folder_location_name +'.csv',index=False)
+Company_investments_details.to_csv('Company_Investments_'+ folder_location_name +'.csv',index=False)
 Company_Details_a=Company_Details_.drop(Company_Details_.columns[[0]],axis=1).drop_duplicates()
 Company_Details_a.to_csv('Company_Details' +'_'+ folder_location_name +'.csv',index=False)
 Company_FundingRounds_=Company_FundingRounds_.drop(Company_FundingRounds_.columns[[0]],axis=1).drop_duplicates()
